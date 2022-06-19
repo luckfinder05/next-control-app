@@ -17,9 +17,7 @@ const ControlledTabs = () => {
         <DataGrid />
       </Tab>
       <Tab eventKey="add" title="Добавить">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio omnis
-        fuga, accusamus aspernatur repellat, ea dolor laboriosam maxime voluptas
-        consequatur ex, facilis a et beatae neque vitae ipsa eum asperiores.
+      <AddForm/>
       </Tab>
       <Tab eventKey="update" title="Изменить">
         <AddForm/>
