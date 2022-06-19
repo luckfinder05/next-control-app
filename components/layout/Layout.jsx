@@ -15,7 +15,7 @@ function Layout(props) {
 
   const { data: session, status } = useSession();
   if (status === "loading") {
-    return <p>Loading...</p>;
+    return null;
   }
 
   if (status === "unauthenticated") {
