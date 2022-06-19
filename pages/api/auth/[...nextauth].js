@@ -45,6 +45,7 @@ export default NextAuth({
     async signIn({ user, account, profile, email, credentials }) {
       const validPassword = bcrypt.compareSync(credentials.password, user.password);
       if (!validPassword) return false;
+      user.name = credentials.username;
       return user
     },
     async redirect({ url, baseUrl }) {
