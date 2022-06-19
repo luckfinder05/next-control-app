@@ -17,7 +17,7 @@ function MyApp({ data, Component, appProps, pageProps }) {
   return (
     <>
       <Head>
-        <title>Authentication page</title>
+        <title>Control App</title>
       </Head>
 
       <SSRProvider>
