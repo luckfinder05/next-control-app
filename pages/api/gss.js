@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const APIkey = 'AIzaSyDux7EnRrBcWiQ-Bab_xOSSjZZPiP6S5u4';
+const APIkey = 'AIzaSyCF5BP4QLrvLGlYmva1CI8TAACOrwYHndk';
 const spreadsheetId = '15qJi39meo8qPe_7dXblg-CMiET_rVCuBguwXhxrcQm0';
 const SheetRange = 'Предписания!A:K';
 
