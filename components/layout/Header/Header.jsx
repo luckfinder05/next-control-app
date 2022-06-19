@@ -13,34 +13,23 @@ import { useSelector, useDispatch } from "react-redux";
 import UserMenu from "./UserMenu";
 import { SignOut } from "../../UI/icons";
 import { useRouter } from "next/router";
+import { signOut, useSession } from "next-auth/react";
 
 function Header(props) {
   const router = useRouter();
   const authCtx = useSelector((state) => state.auth);
-  console.log('authCtx: ', authCtx);
   const dispatch = useDispatch();
 
-  const isLoggedIn = authCtx.isLoggedIn;
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
   if (!isLoggedIn) return null;
 
-  const username = authCtx.username;
-  console.log("username: ", username);
+  const username = session.user.name;
 
-  // useEffect(() => {
-  //   setheaderLoggedIn(isLoggedIn);
-  // }, [isLoggedIn]);
-
-  // const [modalIsVisible, setmodalIsVisible] = useState(null);
-
-  // const modalCloseHandler = (props) => {
-  //   setmodalIsVisible(null);
-  // };
-
-
-  function signOut() {
-    fetch("/auth/signout");
+  function signOutHandler() {
+    signOut();
+    router.push("api/auth/signin");
     dispatch(logout());
-    router.push("/auth/login");
   }
 
   return (
@@ -56,9 +45,9 @@ function Header(props) {
               <Nav className="justify-content-start offset-md-2">
                 <ServicesMenu />
                 <NavLink href="/secure/editor">Editor</NavLink>
-                <UserMenu className="ms-lg-auto" user={username} />
+                <UserMenu className="ms-lg-auto" username={username} />
                 <Nav.Item className="">
-                  <Button variant="light" onClick={signOut}>
+                  <Button variant="light" onClick={signOutHandler}>
                     <SignOut /> Logout
                   </Button>
                 </Nav.Item>
