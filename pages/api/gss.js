@@ -1,6 +1,6 @@
 const { google } = require('googleapis');
 const APIkey = process.env.GOOGLE_API;
-const spreadsheetId = SPREADSHEET_ID;
+const spreadsheetId = process.env.SPREADSHEET_ID;
 const SheetRange = 'Предписания!A:K';
 
 async function handler(request, response) {
