@@ -1,8 +1,11 @@
 import NextAuth from "next-auth"
 import { getToken } from "next-auth/jwt"
 import CredentialsProvider from "next-auth/providers/credentials"
-import clientPromise from "./lib/mongodb"
+// import clientPromise from "./lib/mongodb"
 const bcrypt = require('bcryptjs');
+
+import dbConnect from '../../../lib/mongooseConnect'
+import { User } from "../../../models/User";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -24,9 +27,8 @@ export default NextAuth({
         const { username } = credentials;
 
         try {
-          const connection = await clientPromise;
-          const users = await connection.db().collection('users');
-          const user = await users.findOne({ username });
+          await dbConnect();
+          const user = await User.findOne({ username });
           if (user) return user;
         }
         catch (err) {
@@ -46,6 +48,7 @@ export default NextAuth({
       const validPassword = bcrypt.compareSync(credentials.password, user.password);
       if (!validPassword) return false;
       user.name = credentials.username;
+      console.log('user: ', user);
       return user
     },
     async redirect({ url, baseUrl }) {
