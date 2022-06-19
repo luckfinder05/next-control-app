@@ -19,7 +19,8 @@ function Layout(props) {
   }
 
   if (status === "unauthenticated") {
-    router.push('/auth/login')
+    router.push("api/auth/signin");
+    return null;
   }
 
   /*   useEffect(() => {
