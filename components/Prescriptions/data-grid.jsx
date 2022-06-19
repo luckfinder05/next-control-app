@@ -18,7 +18,6 @@ export default function DataGrid() {
     filter: true,
     resizable: true,
     filterParams,
-    enableRowGroup: true,
     autoHeight: true,
   };
 
