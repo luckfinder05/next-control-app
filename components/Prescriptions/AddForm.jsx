@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -9,11 +9,12 @@ import {
 } from "react-bootstrap";
 import { SignIn } from "../../components/UI/icons";
 
-function AddForm() {
-  function onSubmit(ev) {
-    ev.preventDefault();
-    console.log('adding new')
-  }
+function AddForm(props) {
+  const tableData = props.tableData;
+  const [contractors, setContractors] = useState([]);
+  const [docNumber, setDocNumber] = useState(null);
+  const [orderText, setOrderText] = useState("");
+  const [selectedContractors, setSelectedContractors] = useState(null);
 
   /* 
     '_uid': row[0],
@@ -29,46 +30,128 @@ function AddForm() {
     'Примечание': row[10]
   */
 
+  useEffect(() => {
+    if (Array.isArray(tableData)) {
+      if (tableData.length !== 0) {
+        setDocNumber(tableData.at(-1)["№ предписания"]);
+      }
+
+      setContractors(
+        [...new Set(tableData.map((el) => el["Подрядчик"]))].map(
+          (el, index) => {
+            return (
+              <option key={index} value={el}>
+                {el}
+              </option>
+              // <Form.Check
+              //   key={el}
+              //   label={el}
+              //   onClick={contractorSelectHandle}
+              //   name="contractors"
+              //   type="radio"
+              //   id={`inline-checkbox-${index}`}
+              // />
+            );
+          }
+        )
+      );
+    }
+  }, [tableData]);
+
+  function docNumberHandler(value) {
+    setDocNumber(
+      Number(tableData.at(-1)["№ предписания"]) + value.target.checked
+    );
+  }
+
+  function pasteButtonHandler(ev) {
+    navigator.clipboard.readText().then((res) => {
+      setOrderText((orderText += res));
+    });
+  }
+
+  function orderTextHandler(ev) {
+    setOrderText(ev.target.value);
+  }
+
+  function contractorSelectHandle(ev) {
+    setSelectedContractors(ev.target.value);
+  }
+  
+  function onSubmit(ev) {
+    ev.preventDefault();
+    console.log("adding new");
+    fetch("/api/gss/getData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        docNumber,
+        orderText,
+        contractors: selectedContractors,
+      }),
+    })
+      .then((result) => result.json())
+      .then((returnedData) => console.log(returnedData))
+      .catch((err) => console.error(err));
+  }
   return (
     <Form onSubmit={onSubmit}>
-      <InputGroup className="mb-3">
-        <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-        <FormControl
-          placeholder="Username"
-          aria-label="Username"
-          aria-describedby="basic-addon1"
+      <h2>Добавить новое замечание в реестр</h2>
+
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Label>№ предписания:</Form.Label>
+        <Form.Control
+          plaintext
+          readOnly
+          defaultValue={docNumber}
+          type="number"
+          placeholder={docNumber}
         />
-      </InputGroup>
-      <InputGroup className="mb-3">
-        <FormControl
-          placeholder="Recipient's username"
-          aria-label="Recipient's username"
-          aria-describedby="basic-addon2"
+        <Form.Check
+          type="switch"
+          id="custom-switch"
+          label="Это новое предписание"
+          onChange={docNumberHandler}
         />
-        <InputGroup.Text id="basic-addon2">@example.com</InputGroup.Text>
-      </InputGroup>
-      <Form.Label htmlFor="basic-url">Your vanity URL</Form.Label>
-      <InputGroup className="mb-3">
-        <InputGroup.Text id="basic-addon3">
-          https://example.com/users/
-        </InputGroup.Text>
-        <FormControl id="basic-url" aria-describedby="basic-addon3" />
-      </InputGroup>
-      <InputGroup className="mb-3">
-        <InputGroup.Text>$</InputGroup.Text>
-        <FormControl aria-label="Amount (to the nearest dollar)" />
-        <InputGroup.Text>.00</InputGroup.Text>
-      </InputGroup>
-      <InputGroup>
-        <InputGroup.Text>With textarea</InputGroup.Text>
-        <FormControl as="textarea" aria-label="With textarea" />
-      </InputGroup>
+        <Form.Text id="docNumberHelpBlock" muted>
+          Переключить, если это пункт нового предписания.
+        </Form.Text>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
+        <Form.Label>Подрядчик:</Form.Label>
+
+        <Form.Select
+          aria-label="Выбор подрядчика"
+          onChange={contractorSelectHandle}
+        >
+          <option key="default-key" value={null}>
+            Выберите подрядчика из списка ...
+          </option>
+          {contractors}
+        </Form.Select>
+        {/* {contractors} */}
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
+        <Form.Label>Текст замечания:</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={4}
+          value={orderText}
+          onChange={orderTextHandler}
+        />
+        <Button onClick={pasteButtonHandler}>Вставить текст</Button>
+      </Form.Group>
+
       <Button
         variant="primary"
         // disabled={formState.isSubmitting}
         onClick={onSubmit}
       >
-        <SignIn /> Изменить
+        Добавить
         {/* {formState.isSubmitting && ( */}
         {/* <span className="spinner-border spinner-border-sm mr-1"></span> */}
       </Button>

@@ -3,7 +3,7 @@ import { Form, InputGroup, Tab, Tabs } from "react-bootstrap";
 import AddForm from "./AddForm";
 import DataGrid from "./data-grid";
 
-const ControlledTabs = () => {
+const ControlledTabs = (props) => {
   const [key, setKey] = useState("table");
 
   return (
@@ -14,10 +14,10 @@ const ControlledTabs = () => {
       className="mb-3"
     >
       <Tab eventKey="table" title="Таблица">
-        <DataGrid />
+        <DataGrid  tableData={props.tableData}/>
       </Tab>
       <Tab eventKey="add" title="Добавить">
-      <AddForm/>
+      <AddForm  tableData={props.tableData}/>
       </Tab>
       <Tab eventKey="update" title="Изменить">
         <AddForm/>

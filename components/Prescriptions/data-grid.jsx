@@ -5,9 +5,9 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import Head from "next/head";
 
-export default function DataGrid() {
+export default function DataGrid(props) {
   const gridRef = useRef();
-  const [rowData, setRowData] = useState();
+  const rowData = props.tableData;
   const filterParams = {
     buttons: ["reset", "apply"],
     debounceMs: 200,
@@ -24,8 +24,13 @@ export default function DataGrid() {
   const [colDefs, setColDefs] = useState([
     { field: "_uid", hide: true },
     { field: "№ предписания", width: 100 },
-    { field: "№ замечания", width: 100 },
-    { field: "Вид контроля", headerName: "Тип", wrapText: true, flex: true },
+    { field: "№ замечания", headerName: "№ п/п", width: 100 },
+    {
+      field: "Вид контроля",
+      headerName: "Вид работ",
+      wrapText: true,
+      flex: true,
+    },
     { field: "Дата выдачи замечания", headerName: "Дата выдачи", width: 150 },
     {
       field: "Содержание предписания",
@@ -41,17 +46,11 @@ export default function DataGrid() {
     { field: "Примечание", wrapText: true, flex: true },
   ]);
 
-  useEffect(() => {
-    fetch("/api/gss")
-      .then((result) => result.json())
-      .then((rowData) => setRowData(rowData));
-  }, []);
-
   const rowStyle = { background: "transparent" };
   // set background colour on even rows again, this looks bad, should be using CSS classes
   const getRowStyle = (params) => {
     if (params.node.data["Статус замечания"].toLowerCase() === "устранено") {
-      console.log(params.node.data["Статус замечания"].toLowerCase());
+      // console.log(params.node.data["Статус замечания"].toLowerCase());
       return { background: "rgba(0,255,0,0.1)" };
     }
     if (params.node.rowIndex % 2 === 0) {
