@@ -16,6 +16,7 @@ function AddForm(props) {
   const [docNumber, setDocNumber] = useState(null);
   const [orderText, setOrderText] = useState("");
   const [selectedContractors, setSelectedContractors] = useState(null);
+  const [supervisors, setSupervisors] = useState(null);
 
   /* 
     '_uid': row[0],
@@ -37,25 +38,20 @@ function AddForm(props) {
         setDocNumber(tableData.at(-1)["№ предписания"]);
       }
 
-      setContractors(
-        [...new Set(tableData.map((el) => el["Подрядчик"]))].map(
+      function createUniqueOptionsList(dataset, fieldName) {
+        return [...new Set(dataset.map((el) => el[fieldName]))].map(
           (el, index) => {
             return (
               <option key={index} value={el}>
                 {el}
               </option>
-              // <Form.Check
-              //   key={el}
-              //   label={el}
-              //   onClick={contractorSelectHandle}
-              //   name="contractors"
-              //   type="radio"
-              //   id={`inline-checkbox-${index}`}
-              // />
             );
           }
-        )
-      );
+        );
+      }
+
+      setContractors(createUniqueOptionsList(tableData, "Подрядчик"));
+      setSupervisors(createUniqueOptionsList(tableData, "Представитель ССК"));
     }
   }, [tableData]);
 
@@ -79,7 +75,11 @@ function AddForm(props) {
     setSelectedContractors(ev.target.value);
   }
 
-  function onSubmit(ev) {
+  function setFocusToTextInput(ev) {
+    return ev.target.nextElementSibling.focus();
+  }
+
+  function submitHandler(ev) {
     ev.preventDefault();
     console.log("adding new");
     fetch("/api/gss/getData", {
@@ -97,13 +97,14 @@ function AddForm(props) {
       .then((returnedData) => console.log(returnedData))
       .catch((err) => console.error(err));
   }
+
   return (
-    <Form className="border border-light rounded p-2" onSubmit={onSubmit}>
+    <Form className="border border-light rounded p-2" onSubmit={submitHandler}>
       <h2>Добавить замечание в реестр</h2>
 
       <Form.Group
         className="mb-3 border rounded p-2"
-        controlId="exampleForm.ControlInput1"
+        controlId="addForm.ControlInput1"
       >
         <Stack direction="horizontal" gap={1}>
           <Form.Check
@@ -122,41 +123,69 @@ function AddForm(props) {
           />
         </Stack>
         <Form.Text id="docNumberHelpBlock" muted>
-          Переключить, если это первый пункт нового предписания.
+          Переключи, если это первый пункт нового предписания.
         </Form.Text>
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
-        <Form.Label>Подрядчик:</Form.Label>
-
-        <Form.Select
-          aria-label="Выбор подрядчика"
-          onChange={contractorSelectHandle}
-        >
-          <option key="default-key" value={null}>
-            Выберите подрядчика из списка ...
-          </option>
-          {contractors}
-        </Form.Select>
-        {/* {contractors} */}
+      <Form.Group className="mb-3" controlId="addForm.ControlInput2">
+        <InputGroup className="mb-3">
+          <InputGroup.Text onClick={setFocusToTextInput}>Подрядчик:</InputGroup.Text>
+          <Form.Control aria-label="Supervisor name" />
+          <Form.Select
+            aria-label="Выбор подрядчика"
+            onChange={contractorSelectHandle}
+          >
+            <option key="default-key" value={null}>
+              Выберите подрядчика из списка ...
+            </option>
+            {contractors}
+          </Form.Select>
+        </InputGroup>
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
-        <Form.Label>Текст замечания:</Form.Label>
-        <Form.Control
-          className="mb-2"
-          as="textarea"
-          rows={4}
-          value={orderText}
-          onChange={orderTextHandler}
-        />
+      <Form.Group className="mb-3" controlId="addForm.ControlInput3">
+        <InputGroup className="mb-1">
+          <InputGroup.Text onClick={setFocusToTextInput}>
+            Текст замечания:
+          </InputGroup.Text>
+          <Form.Control
+            as="textarea"
+            rows={4}
+            value={orderText}
+            onChange={orderTextHandler}
+          />
+        </InputGroup>
         <Button onClick={pasteButtonHandler}>Вставить текст</Button>
       </Form.Group>
+
+      <InputGroup className="mb-3">
+        <InputGroup.Text>Статус замечания:</InputGroup.Text>
+        <Form.Control
+          // plaintext
+          readOnly
+          defaultValue={`Не устранено`}
+          placeholder={`Не устранено`}
+          aria-label="Order status"
+        />
+      </InputGroup>
+
+      <InputGroup className="mb-3">
+        <InputGroup.Text onClick={setFocusToTextInput}>
+          Фамилия сотрудника строительного контроля:
+        </InputGroup.Text>
+        <Form.Control aria-label="Supervisor name" />
+        <Form.Select aria-label="Default select example">
+          <option key="default-key" value={null}>
+            Выберите из списка ...
+          </option>
+          {supervisors}
+        </Form.Select>
+      </InputGroup>
 
       <Button
         variant="primary"
         // disabled={formState.isSubmitting}
-        onClick={onSubmit}
+        onClick={submitHandler}
       >
         Добавить
         {/* {formState.isSubmitting && ( */}
