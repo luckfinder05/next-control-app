@@ -5,17 +5,18 @@ const SheetRange = 'Предписания!A:K';
 
 async function handler(request, response) {
   const sheets = google.sheets({ version: 'v4' });
+  const spreadSheetRequest = {
+    spreadsheetId: spreadsheetId,
+    range: SheetRange,
+    key: APIkey
+  }
 
   if (request.method === 'GET') {
     if (request.url.split('/').at(-1) === 'getData') {
 
       try {
-        const request = {
-          spreadsheetId: spreadsheetId,
-          range: SheetRange,
-          key: APIkey
-        }
-        const result = (await sheets.spreadsheets.values.get(request)).data.values;
+
+        const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
         return response.status(200).json(transformData(result));
       } catch (err) {
         console.error(err);
@@ -23,7 +24,9 @@ async function handler(request, response) {
       }
     }
     else if (request.url.split('/').at(-1) === 'getContractors') {
-
+      const result = (await sheets.spreadsheets.values.get(request)).data.values;
+      const contractorsList = [...new Set(transformData(result).map((el) => el["Подрядчик"]))]
+      return response.status(200).json(contractorsList);
 
     }
   } else if (request.method === 'POST') {
@@ -33,8 +36,6 @@ async function handler(request, response) {
 }
 
 function transformData(rows) {
-  console.log('rows is Array? = ', Array.isArray(rows));
-
   if (rows.length) {
     const arr = rows.slice(1);
     const result = arr.map((row) => {

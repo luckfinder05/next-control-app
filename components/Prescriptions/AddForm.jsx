@@ -6,6 +6,7 @@ import {
   Container,
   InputGroup,
   FormControl,
+  Stack,
 } from "react-bootstrap";
 import { SignIn } from "../../components/UI/icons";
 
@@ -77,7 +78,7 @@ function AddForm(props) {
   function contractorSelectHandle(ev) {
     setSelectedContractors(ev.target.value);
   }
-  
+
   function onSubmit(ev) {
     ev.preventDefault();
     console.log("adding new");
@@ -97,26 +98,31 @@ function AddForm(props) {
       .catch((err) => console.error(err));
   }
   return (
-    <Form onSubmit={onSubmit}>
-      <h2>Добавить новое замечание в реестр</h2>
+    <Form className="border border-light rounded p-2" onSubmit={onSubmit}>
+      <h2>Добавить замечание в реестр</h2>
 
-      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-        <Form.Label>№ предписания:</Form.Label>
-        <Form.Control
-          plaintext
-          readOnly
-          defaultValue={docNumber}
-          type="number"
-          placeholder={docNumber}
-        />
-        <Form.Check
-          type="switch"
-          id="custom-switch"
-          label="Это новое предписание"
-          onChange={docNumberHandler}
-        />
+      <Form.Group
+        className="mb-3 border rounded p-2"
+        controlId="exampleForm.ControlInput1"
+      >
+        <Stack direction="horizontal" gap={1}>
+          <Form.Check
+            className="col-3"
+            type="switch"
+            id="custom-switch"
+            label="Новое предписание"
+            onChange={docNumberHandler}
+          />
+          <Form.Control
+            plaintext
+            readOnly
+            defaultValue={`№ Предписания: ${docNumber}`}
+            type="number"
+            placeholder={`№ Предписания: ${docNumber}`}
+          />
+        </Stack>
         <Form.Text id="docNumberHelpBlock" muted>
-          Переключить, если это пункт нового предписания.
+          Переключить, если это первый пункт нового предписания.
         </Form.Text>
       </Form.Group>
 
@@ -138,6 +144,7 @@ function AddForm(props) {
       <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
         <Form.Label>Текст замечания:</Form.Label>
         <Form.Control
+          className="mb-2"
           as="textarea"
           rows={4}
           value={orderText}
