@@ -24,13 +24,26 @@ async function handler(request, response) {
       }
     }
     else if (request.url.split('/').at(-1) === 'getContractors') {
-      const result = (await sheets.spreadsheets.values.get(request)).data.values;
+      const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
       const contractorsList = [...new Set(transformData(result).map((el) => el["Подрядчик"]))]
       return response.status(200).json(contractorsList);
 
     }
   } else if (request.method === 'POST') {
     return response.status(200).send({ message: "ok", data: request.body });
+
+  /*   spreadSheetRequest.range = (await (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.range)
+
+    try {
+      const ssResponse = (await sheets.spreadsheets.values.append(spreadSheetRequest)).data;
+      // TODO: Change code below to process the `response` object:
+      console.log(JSON.stringify(ssResponse, null, 2));
+      return response.status(200).send({ message: "ok", data: request.body, ssResponse });
+    } catch (err) {
+      console.error(err);
+    }
+
+ */
   }
   return null
 }
