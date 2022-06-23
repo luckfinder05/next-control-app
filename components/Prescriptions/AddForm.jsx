@@ -9,14 +9,19 @@ import {
   Stack,
 } from "react-bootstrap";
 import { SignIn } from "../../components/UI/icons";
+import useInputListGroup from "../../hooks/useInputGroup";
 
 function AddForm(props) {
   const tableData = props.tableData;
-  const [contractors, setContractors] = useState([]);
   const [docNumber, setDocNumber] = useState(null);
+  const [docDate, setDocDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [orderText, setOrderText] = useState("");
-  const [selectedContractors, setSelectedContractors] = useState(null);
-  const [supervisors, setSupervisors] = useState(null);
+  const contractor = useInputListGroup(tableData, "Подрядчик");
+  const workType = useInputListGroup(tableData, "Вид контроля");
+  const supervisor = useInputListGroup(tableData, "Представитель ССК");
+  const order = useInputListGroup(tableData, "Статус замечания");
 
   /* 
     '_uid': row[0],
@@ -35,23 +40,8 @@ function AddForm(props) {
   useEffect(() => {
     if (Array.isArray(tableData)) {
       if (tableData.length !== 0) {
-        setDocNumber(tableData.at(-1)["№ предписания"]);
+        setDocNumber(Number(tableData.at(-1)["№ предписания"]));
       }
-
-      function createUniqueOptionsList(dataset, fieldName) {
-        return [...new Set(dataset.map((el) => el[fieldName]))].map(
-          (el, index) => {
-            return (
-              <option key={index} value={el}>
-                {el}
-              </option>
-            );
-          }
-        );
-      }
-
-      setContractors(createUniqueOptionsList(tableData, "Подрядчик"));
-      setSupervisors(createUniqueOptionsList(tableData, "Представитель ССК"));
     }
   }, [tableData]);
 
@@ -71,33 +61,39 @@ function AddForm(props) {
     setOrderText(ev.target.value);
   }
 
-  function contractorSelectHandle(ev) {
-    setSelectedContractors(ev.target.value);
-  }
-
   function setFocusToTextInput(ev) {
     return ev.target.nextElementSibling.focus();
+  }
+
+  function docDateHandler(ev) {
+    setDocDate(ev.target.value);
   }
 
   function submitHandler(ev) {
     ev.preventDefault();
     console.log("adding new");
-    fetch("/api/gss/getData", {
+    fetch("/api/gss/postData", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        docNumber,
-        orderText,
-        contractors: selectedContractors,
+        _uid: `_uid${tableData.length + 1}`,
+        "№ предписания": docNumber,
+        "Вид контроля": workType.value,
+        "Дата выдачи замечания": docDate,
+        "Содержание предписания": orderText,
+        "Статус замечания": order.value || "Не устранено",
+        "Дата устранения": "",
+        Подрядчик: contractor.value,
+        "Представитель ССК": supervisor.value,
+        Примечание: "",
       }),
     })
       .then((result) => result.json())
       .then((returnedData) => console.log(returnedData))
       .catch((err) => console.error(err));
   }
-
   return (
     <Form className="border border-light rounded p-2" onSubmit={submitHandler}>
       <h2>Добавить замечание в реестр</h2>
@@ -115,70 +111,136 @@ function AddForm(props) {
             onChange={docNumberHandler}
           />
           <Form.Control
+            type="text"
             plaintext
             readOnly
-            defaultValue={`№ Предписания: ${docNumber}`}
-            type="number"
+            value={`№ Предписания: ${docNumber}`}
             placeholder={`№ Предписания: ${docNumber}`}
+          />
+          <Form.Control
+            type="date"
+            name="orderDate"
+            onChange={docDateHandler}
+            defaultValue={docDate}
           />
         </Stack>
         <Form.Text id="docNumberHelpBlock" muted>
           Переключи, если это первый пункт нового предписания.
         </Form.Text>
-      </Form.Group>
 
-      <Form.Group className="mb-3" controlId="addForm.ControlInput2">
-        <InputGroup className="mb-3">
-          <InputGroup.Text onClick={setFocusToTextInput}>Подрядчик:</InputGroup.Text>
-          <Form.Control aria-label="Supervisor name" />
+        <InputGroup className="mt-3">
+          <InputGroup.Text onClick={setFocusToTextInput}>
+            Статус замечания:
+          </InputGroup.Text>
+          <Form.Control
+            readOnly
+            aria-label="Order status"
+            value={order.value}
+            onChange={order.onChange}
+            placeholder="Не устранено"
+          />
           <Form.Select
             aria-label="Выбор подрядчика"
-            onChange={contractorSelectHandle}
+            value={order.value}
+            onChange={order.onChange}
           >
-            <option key="default-key" value={null}>
-              Выберите подрядчика из списка ...
+            <option key="default-key" value="">
+              Статус замечания
             </option>
-            {contractors}
+            {order.list}
           </Form.Select>
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="addForm.ControlInput3">
-        <InputGroup className="mb-1">
-          <InputGroup.Text onClick={setFocusToTextInput}>
-            Текст замечания:
-          </InputGroup.Text>
-          <Form.Control
-            as="textarea"
-            rows={4}
-            value={orderText}
-            onChange={orderTextHandler}
-          />
-        </InputGroup>
-        <Button onClick={pasteButtonHandler}>Вставить текст</Button>
-      </Form.Group>
+      <InputGroup className="mb-3">
+        <InputGroup.Text onClick={setFocusToTextInput}>
+          Подрядчик:
+        </InputGroup.Text>
+        <Form.Control
+          aria-label="Подрядчик"
+          value={contractor.value}
+          onChange={contractor.onChange}
+          placeholder="Выберите подрядчика из списка или введите нового"
+        />
+        <Form.Select
+          aria-label="Выбор подрядчика"
+          value={contractor.value}
+          onChange={contractor.onChange}
+        >
+          <option key="default-key" value="">
+            Список подрядчиков ...
+          </option>
+          {contractor.list}
+        </Form.Select>
+      </InputGroup>
 
       <InputGroup className="mb-3">
-        <InputGroup.Text>Статус замечания:</InputGroup.Text>
+        <InputGroup.Text onClick={setFocusToTextInput}>
+          Вид работ:
+        </InputGroup.Text>
         <Form.Control
-          // plaintext
-          readOnly
-          defaultValue={`Не устранено`}
-          placeholder={`Не устранено`}
-          aria-label="Order status"
+          aria-label="Вид работ"
+          value={workType.value}
+          onChange={workType.onChange}
+          placeholder="Выберите вид работ из списка или введите новый"
         />
+        <Form.Select
+          aria-label="Выбор вида работ"
+          value={workType.value}
+          onChange={workType.onChange}
+        >
+          <option key="default-key" value="">
+            Виды работ...
+          </option>
+          {workType.list}
+        </Form.Select>
       </InputGroup>
+
+      <InputGroup className="mb-1">
+        <InputGroup.Text onClick={setFocusToTextInput}>
+          Текст замечания:
+        </InputGroup.Text>
+        <Form.Control
+          as="textarea"
+          rows={4}
+          value={orderText}
+          onChange={orderTextHandler}
+        />
+        <Button className="h-10" onClick={pasteButtonHandler}>
+          Вставить текст
+        </Button>
+      </InputGroup>
+
+      {/* <InputGroup className="mb-1">
+        <InputGroup.Text onClick={setFocusToTextInput}>
+          Текст замечания:
+        </InputGroup.Text>
+        <Form.Control
+          as="textarea"
+          rows={4}
+          value={orderText}
+          onChange={orderTextHandler}
+        />
+      </InputGroup> */}
 
       <InputGroup className="mb-3">
         <InputGroup.Text onClick={setFocusToTextInput}>
           Фамилия сотрудника строительного контроля:
         </InputGroup.Text>
-        <Form.Control aria-label="Supervisor name" />
-        <Form.Select aria-label="Default select example">
-          <option key="default-key" value={null}>
+        <Form.Control
+          aria-label="Supervisor name"
+          value={supervisor.value}
+          onChange={supervisor.onChange}
+        />
+        <Form.Select
+          aria-label="Default select example"
+          value={supervisor.value}
+          onChange={supervisor.onChange}
+        >
+          <option key="default-key" value="">
             Выберите из списка ...
           </option>
-          {supervisors}
+          {supervisor.list}
         </Form.Select>
       </InputGroup>
 
