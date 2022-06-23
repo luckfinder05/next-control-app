@@ -14,13 +14,13 @@ const ControlledTabs = (props) => {
       className="mb-3"
     >
       <Tab eventKey="table" title="Таблица">
-        <DataGrid  tableData={props.tableData}/>
+        <DataGrid tableData={props.tableData} />
       </Tab>
       <Tab eventKey="add" title="Добавить">
-      <AddForm  tableData={props.tableData}/>
+        <AddForm tableData={props.tableData} />
       </Tab>
       <Tab eventKey="update" title="Изменить">
-        <AddForm/>
+        <AddForm />
       </Tab>
       <Tab eventKey="delete" title="Удалить" disabled>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio omnis
