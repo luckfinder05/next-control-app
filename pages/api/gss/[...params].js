@@ -49,6 +49,7 @@ async function handler(request, response) {
 
     // spreadSheetRequest.range = (await (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.range)
     // console.log('spreadSheetRequest.range: ', spreadSheetRequest.range);
+    response.send(values);
     const result = await appendValues(values)
     console.log('result: ', result);
     return response.status(200).send({ message: "ok", data: request.body, result });
