@@ -19,7 +19,7 @@ function useInputListGroup(dataAray, fieldName) {
   useEffect(() => {
     if (Array.isArray(dataAray)) {
       if (dataAray.length !== 0) {
-        setList(createUniqueOptionsList(dataAray, fieldName));
+        setList(createUniqueOptionsList(dataAray, fieldName).sort());
       }
     }
     return

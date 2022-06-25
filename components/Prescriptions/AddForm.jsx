@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { SignIn } from "../../components/UI/icons";
 import useInputListGroup from "../../hooks/useInputGroup";
+import { InputGroupTextSelect } from "../Helpers";
 
 function AddForm(props) {
   const tableData = props.tableData;
@@ -80,6 +81,7 @@ function AddForm(props) {
       body: JSON.stringify({
         _uid: `_uid${tableData.length + 1}`,
         "№ предписания": docNumber,
+        "№ замечания": tableData.length + 1,
         "Вид контроля": workType.value,
         "Дата выдачи замечания": docDate,
         "Содержание предписания": orderText,
@@ -128,135 +130,123 @@ function AddForm(props) {
           Переключи, если это первый пункт нового предписания.
         </Form.Text>
 
-        <InputGroup className="mt-3">
-          <InputGroup.Text onClick={setFocusToTextInput}>
-            Статус замечания:
-          </InputGroup.Text>
-          <Form.Control
-            readOnly
-            aria-label="Order status"
-            value={order.value}
-            onChange={order.onChange}
-            placeholder="Не устранено"
+        <Form.Group className="mb-3 border rounded p-2">
+          <h3>Замечания</h3>
+          {/* <Form.Control
+              type='number'
+            /> */}
+          <Stack direction="horizontal" gap={1}>
+            <InputGroupTextSelect
+              textHeader="Подрядчик"
+              textPlaceholder="Введите нового"
+              ariaLabel="Подрядчик"
+              object={contractor}
+            />
+            <InputGroupTextSelect
+              textHeader="Вид работ"
+              textPlaceholder="Введите новый вид"
+              ariaLabel="Вид работ"
+              object={workType}
+            />
+          </Stack>
+
+          <InputGroup className="mt-1">
+            <InputGroup.Text onClick={setFocusToTextInput}>
+              Текст замечания
+            </InputGroup.Text>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={orderText}
+              onChange={orderTextHandler}
+            />
+            <Button
+              className="h-10"
+              variant="secondary"
+              onClick={pasteButtonHandler}
+            >
+              Вставить текст
+            </Button>
+          </InputGroup>
+
+          <InputGroup className="mt-1">
+            <InputGroup.Text
+            //  onClick={setFocusToTextInput}
+            >
+              Предписано
+            </InputGroup.Text>
+            <Form.Control
+              as="textarea"
+              rows={2}
+              // value={orderText}
+              // onChange={orderTextHandler}
+            />
+          </InputGroup>
+
+          <InputGroup className="mt-1">
+            <InputGroup.Text
+            //  onClick={setFocusToTextInput}
+            >
+              Устранить до
+            </InputGroup.Text>
+            <Form.Control
+              className="flex-shrink-1"
+              // value={orderText}
+              // onChange={orderTextHandler}
+            />
+            <Form.Control
+              className="ms-auto"
+              type="date"
+              name="orderDate"
+              // onChange={docDateHandler}
+              // defaultValue={docDate}
+            />
+          </InputGroup>
+
+          <Stack className="mt-1" direction="horizontal" gap={1}>
+            <InputGroupTextSelect
+              textHeader="Статус замечания"
+              textPlaceholder="Не устранено"
+              ariaLabel="Статус замечания"
+              object={order}
+              isReadonly={true}
+            />
+            <InputGroup>
+              <InputGroup.Text onClick={setFocusToTextInput}>
+                Место обнаружения
+              </InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="в осях... отметка... этаж..."
+              />
+            </InputGroup>
+          </Stack>
+
+          <InputGroupTextSelect
+            className="mt-1"
+            textHeader="Ф.И.О. строительного контроля"
+            textPlaceholder="Ф.И.О."
+            ariaLabel="Supervisor name"
+            object={supervisor}
           />
-          <Form.Select
-            aria-label="Выбор подрядчика"
-            value={order.value}
-            onChange={order.onChange}
-          >
-            <option key="default-key" value="">
-              Статус замечания
-            </option>
-            {order.list}
-          </Form.Select>
-        </InputGroup>
-      </Form.Group>
-
-      <InputGroup className="mb-3">
-        <InputGroup.Text onClick={setFocusToTextInput}>
-          Подрядчик:
-        </InputGroup.Text>
-        <Form.Control
-          aria-label="Подрядчик"
-          value={contractor.value}
-          onChange={contractor.onChange}
-          placeholder="Выберите подрядчика из списка или введите нового"
+        </Form.Group>
+        <Button
+          variant="primary"
+          as="input"
+          type="submit"
+          // disabled={formState.isSubmitting}
+          onClick={submitHandler}
+          value="Записать замечание в таблицу"
         />
-        <Form.Select
-          aria-label="Выбор подрядчика"
-          value={contractor.value}
-          onChange={contractor.onChange}
-        >
-          <option key="default-key" value="">
-            Список подрядчиков ...
-          </option>
-          {contractor.list}
-        </Form.Select>
-      </InputGroup>
-
-      <InputGroup className="mb-3">
-        <InputGroup.Text onClick={setFocusToTextInput}>
-          Вид работ:
-        </InputGroup.Text>
-        <Form.Control
-          aria-label="Вид работ"
-          value={workType.value}
-          onChange={workType.onChange}
-          placeholder="Выберите вид работ из списка или введите новый"
-        />
-        <Form.Select
-          aria-label="Выбор вида работ"
-          value={workType.value}
-          onChange={workType.onChange}
-        >
-          <option key="default-key" value="">
-            Виды работ...
-          </option>
-          {workType.list}
-        </Form.Select>
-      </InputGroup>
-
-      <InputGroup className="mb-1">
-        <InputGroup.Text onClick={setFocusToTextInput}>
-          Текст замечания:
-        </InputGroup.Text>
-        <Form.Control
-          as="textarea"
-          rows={4}
-          value={orderText}
-          onChange={orderTextHandler}
-        />
-        <Button className="h-10" onClick={pasteButtonHandler}>
-          Вставить текст
-        </Button>
-      </InputGroup>
-
-      {/* <InputGroup className="mb-1">
-        <InputGroup.Text onClick={setFocusToTextInput}>
-          Текст замечания:
-        </InputGroup.Text>
-        <Form.Control
-          as="textarea"
-          rows={4}
-          value={orderText}
-          onChange={orderTextHandler}
-        />
-      </InputGroup> */}
-
-      <InputGroup className="mb-3">
-        <InputGroup.Text onClick={setFocusToTextInput}>
-          Фамилия сотрудника строительного контроля:
-        </InputGroup.Text>
-        <Form.Control
-          aria-label="Supervisor name"
-          value={supervisor.value}
-          onChange={supervisor.onChange}
-        />
-        <Form.Select
-          aria-label="Default select example"
-          value={supervisor.value}
-          onChange={supervisor.onChange}
-        >
-          <option key="default-key" value="">
-            Выберите из списка ...
-          </option>
-          {supervisor.list}
-        </Form.Select>
-      </InputGroup>
-
-      <Button
-        variant="primary"
-        // disabled={formState.isSubmitting}
-        onClick={submitHandler}
-      >
-        Добавить
+        {/* Записать замечание в таблицу */}
         {/* {formState.isSubmitting && ( */}
         {/* <span className="spinner-border spinner-border-sm mr-1"></span> */}
-      </Button>
-      {/* {errors.apiError && ( */}
-      <div className="alert alert-danger mt-3 mb-0">
-        {/* {errors.apiError?.message} */}
-      </div>
+        {/* </Button> */}
+        {/* {errors.apiError && ( */}
+        <div className="alert alert-danger mt-3 mb-0">
+          {/* {errors.apiError?.message} */}
+        </div>
+      </Form.Group>
     </Form>
   );
 }
