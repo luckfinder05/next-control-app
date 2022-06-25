@@ -5,6 +5,9 @@ const APIkey = process.env.GOOGLE_API;
 const spreadsheetId = process.env.SPREADSHEET_ID;
 const SheetRange = 'Предписания!A:K';
 
+const auth = authorize();
+const googleService = google.sheets({ version: 'v4', auth });
+
 async function handler(request, response) {
   const sheets = google.sheets({ version: 'v4' });
   const spreadSheetRequest = {
@@ -17,7 +20,6 @@ async function handler(request, response) {
     if (request.url.split('/').at(-1) === 'getData') {
 
       try {
-
         const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
         return response.status(200).json(transformData(result));
       } catch (err) {
@@ -46,27 +48,13 @@ async function handler(request, response) {
       request.body['Примечание']
     ]
 
-
-    // spreadSheetRequest.range = (await (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.range)
-    // console.log('spreadSheetRequest.range: ', spreadSheetRequest.range);
-
-    const result = await appendValues(values)
-    console.log('result: ', result);
-    return response.status(200).send({ message: "ok", data: request.body, result });
-
-
-
-    /*
-        try {
-          const ssResponse = (await sheets.spreadsheets.values.append(spreadSheetRequest)).data;
-          // TODO: Change code below to process the `response` object:
-          console.log(JSON.stringify(ssResponse, null, 2));
-          return response.status(200).send({ message: "ok", data: request.body, ssResponse });
-        } catch (err) {
-          console.error(err);
-        }
-    
-     */
+    try {
+      const result = await appendValues(values)
+      return response.status(200).send({ message: "ok", data: request.body, result: result.data });
+    } catch (error) {
+      console.error(error);
+      return response.status(500).send({ message: "error", error })
+    }
   }
   return null
 }
@@ -102,49 +90,87 @@ function transformData(rows) {
  * @return {obj} spreadsheet information
  */
 async function appendValues(_values) {
-  const { GoogleAuth } = require('google-auth-library');
-  const { google } = require('googleapis');
+  try {
+    let values = [
+      [
+        ..._values
+      ],
 
-  // const auth = new GoogleAuth({ scopes: 'https://www.googleapis.com/auth/spreadsheet' });
+    ];
+    const resource = {
+      values,
+    };
 
-  return authorize(
-    async (auth) => {
+    const result = await googleService.spreadsheets.values.append({
+      spreadsheetId,
+      range: SheetRange,
+      valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
+      resource,
+    });
 
-
-      const service = google.sheets({ version: 'v4', auth });
-      let values = [
-        [
-          ..._values
-        ],
-
-      ];
-      const resource = {
-        values,
-      };
-      try {
-        const result = await service.spreadsheets.values.append({
-          spreadsheetId,
-          range: SheetRange,
-          valueInputOption: "USER_ENTERED",
-          resource,
-        });
-        console.log(`${result} cells appended.`);
-        return result;
-      } catch (err) {
-        // TODO (developer) - Handle exception
-        console.error(err)
-        throw err;
+    const sheetProperties = await getSheetId(auth, spreadsheetId, SheetRange)
+    console.log('sheetId: ', sheetProperties);
+    if (sheetProperties.sheetId) {
+      const borderStyle = {
+        "style": "SOLID",
+        "width": 1,
+        "color": {
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
       }
-    })
+
+      await googleService.spreadsheets.batchUpdate({
+        spreadsheetId,
+        "resource": {
+          "requests": [
+            {
+              "updateBorders": {
+                "range": {
+                  "sheetId": sheetProperties.sheetId,
+                  "startRowIndex": 0,
+                  "endRowIndex": sheetProperties.gridProperties.rowCount,
+                  "startColumnIndex": 0,
+                  "endColumnIndex": sheetProperties.gridProperties.columnCount
+                },
+                "innerHorizontal": borderStyle,
+                "innerVertical": borderStyle
+              }
+            }
+
+          ]
+        }
+      })
+      return result;
+    } else {
+      console.error('Не удалось получить sheetId')
+      return null;
+    }
+  } catch (err) {
+    console.error(err)
+    throw err;
+  }
+}
+
+async function getSheetId(auth, spreadsheetId, range) {
+  try {
+    const request = {
+      spreadsheetId: spreadsheetId,
+      ranges: range,
+      includeGridData: false,
+      auth,
+    };
+
+    const res = await googleService.spreadsheets.get(request)
+    return (res.data.sheets[0].properties)
+  } catch (error) {
+    console.log("Error getting sheetId!")
+    console.error(error)
+    return false
+  }
 }
 
 export default handler;
 
-/* 
-
-
-
-
-
-
-*/
