@@ -79,7 +79,7 @@ function AddForm(props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        _uid: `_uid${tableData.length + 1}`,
+        _uid: `id${tableData.length + 1}`,
         "№ предписания": docNumber,
         "№ замечания": tableData.length + 1,
         "Вид контроля": workType.value,
