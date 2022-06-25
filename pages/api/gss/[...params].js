@@ -49,7 +49,7 @@ async function handler(request, response) {
 
     // spreadSheetRequest.range = (await (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.range)
     // console.log('spreadSheetRequest.range: ', spreadSheetRequest.range);
-    
+
     const result = await appendValues(values)
     console.log('result: ', result);
     return response.status(200).send({ message: "ok", data: request.body, result });
@@ -107,7 +107,7 @@ async function appendValues(_values) {
 
   // const auth = new GoogleAuth({ scopes: 'https://www.googleapis.com/auth/spreadsheet' });
 
-  authorize(
+  return authorize(
     async (auth) => {
 
 
