@@ -4,7 +4,7 @@ import AddForm from "./AddForm";
 import DataGrid from "./data-grid";
 
 const ControlledTabs = (props) => {
-  const [key, setKey] = useState("table");
+  const [key, setKey] = useState("add");
 
   return (
     <Tabs
