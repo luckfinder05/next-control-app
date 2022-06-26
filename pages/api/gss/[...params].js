@@ -4,6 +4,7 @@ const { google } = require('googleapis');
 const APIkey = process.env.GOOGLE_API;
 const spreadsheetId = process.env.SPREADSHEET_ID;
 const SheetRange = 'Предписания!A:K';
+const statsRange = 'Обзор!B8:B10'
 
 const auth = authorize();
 const googleService = google.sheets({ version: 'v4', auth });
@@ -32,6 +33,12 @@ async function handler(request, response) {
       const contractorsList = [...new Set(transformData(result).map((el) => el["Подрядчик"]))]
       return response.status(200).json(contractorsList);
 
+    }
+    else if (request.url.split('/').at(-1) === 'getStats') {
+      spreadSheetRequest.range = statsRange;
+      const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
+      const [total, unresolved, resolved] = result;
+      return response.status(200).json({ total, unresolved, resolved })
     }
   } else if (request.method === 'POST') {
     const values = [
@@ -110,7 +117,6 @@ async function appendValues(_values) {
     });
 
     const sheetProperties = await getSheetId(auth, spreadsheetId, SheetRange)
-    console.log('sheetId: ', sheetProperties);
     if (sheetProperties.sheetId) {
       const borderStyle = {
         "style": "SOLID",
@@ -166,8 +172,7 @@ async function getSheetId(auth, spreadsheetId, range) {
     const res = await googleService.spreadsheets.get(request)
     return (res.data.sheets[0].properties)
   } catch (error) {
-    console.log("Error getting sheetId!")
-    console.error(error)
+    console.error("Error getting sheetId!", error)
     return false
   }
 }
