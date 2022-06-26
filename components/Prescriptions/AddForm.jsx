@@ -18,6 +18,7 @@ function AddForm(props) {
   const [docDate, setDocDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [isDataPosting, setIsDataPosting] = useState(false);
   const [orderText, setOrderText] = useState("");
   const contractor = useInputListGroup(tableData, "Подрядчик");
   const workType = useInputListGroup(tableData, "Вид контроля");
@@ -46,6 +47,37 @@ function AddForm(props) {
     }
   }, [tableData]);
 
+  useEffect(() => {
+    if (isDataPosting) {
+      fetch("/api/gss/postData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _uid: `id${tableData.length + 1}`,
+          "№ предписания": docNumber,
+          "№ замечания": tableData.length + 1,
+          "Вид контроля": workType.value,
+          "Дата выдачи замечания": docDate,
+          "Содержание предписания": orderText,
+          "Статус замечания": order.value || "Не устранено",
+          "Дата устранения": "",
+          Подрядчик: contractor.value,
+          "Представитель ССК": supervisor.value,
+          Примечание: "",
+        }),
+      })
+        .then((result) => result.json())
+        .then((returnedData) => {
+          setIsDataPosting(false);
+          console.log(returnedData);
+        })
+        .catch((err) => console.error(err));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDataPosting]);
+
   function docNumberHandler(value) {
     setDocNumber(
       Number(tableData.at(-1)["№ предписания"]) + value.target.checked
@@ -71,30 +103,9 @@ function AddForm(props) {
   }
 
   function submitHandler(ev) {
+    setIsDataPosting(true);
     ev.preventDefault();
     console.log("adding new");
-    fetch("/api/gss/postData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        _uid: `id${tableData.length + 1}`,
-        "№ предписания": docNumber,
-        "№ замечания": tableData.length + 1,
-        "Вид контроля": workType.value,
-        "Дата выдачи замечания": docDate,
-        "Содержание предписания": orderText,
-        "Статус замечания": order.value || "Не устранено",
-        "Дата устранения": "",
-        Подрядчик: contractor.value,
-        "Представитель ССК": supervisor.value,
-        Примечание: "",
-      }),
-    })
-      .then((result) => result.json())
-      .then((returnedData) => console.log(returnedData))
-      .catch((err) => console.error(err));
   }
   return (
     <Form className="border border-light rounded p-2" onSubmit={submitHandler}>
