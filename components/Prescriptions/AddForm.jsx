@@ -50,6 +50,7 @@ function AddForm(props) {
 
   useEffect(() => {
     if (isDataPosting) {
+      const pattern = /(\d{4})-(\d{2})-(\d{2})/;
       fetch("/api/gss/postData", {
         method: "POST",
         headers: {
@@ -60,7 +61,7 @@ function AddForm(props) {
           "№ предписания": docNumber,
           "№ замечания": tableData.length + 1,
           "Вид контроля": workType.value,
-          "Дата выдачи замечания": docDate,
+          "Дата выдачи замечания": docDate.replace(pattern, "$3.$2.$1"),
           "Содержание предписания": orderText,
           "Статус замечания": order.value || "Не устранено",
           "Дата устранения": "",
