@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Form,
@@ -243,20 +244,30 @@ function AddForm(props) {
         </Form.Group>
         <Button
           variant="primary"
-          as="input"
+          disabled={isDataPosting}
+          // as="input"
           type="submit"
           // disabled={formState.isSubmitting}
           onClick={submitHandler}
           value="Записать замечание в таблицу"
-        />
-        {/* Записать замечание в таблицу */}
-        {/* {formState.isSubmitting && ( */}
-        {/* <span className="spinner-border spinner-border-sm mr-1"></span> */}
-        {/* </Button> */}
+        >
+          {isDataPosting && (
+            <span className="spinner-border spinner-border-sm mr-1"></span>
+          )}
+          Записать замечание в таблицу
+          {/* {formState.isSubmitting && ( */}
+          {/* <span className="spinner-border spinner-border-sm mr-1"></span> */}
+        </Button>
+
+        {isDataPosting && (
+          <Alert key="info" variant="info" className="mt-2">
+            Отправка данных на сервер...
+          </Alert>
+        )}
         {/* {errors.apiError && ( */}
-        <div className="alert alert-danger mt-3 mb-0">
-          {/* {errors.apiError?.message} */}
-        </div>
+        {/* <div className="alert alert-danger mt-3 mb-0"> */}
+        {/* {errors.apiError?.message} */}
+        {/* </div> */}
       </Form.Group>
     </Form>
   );
