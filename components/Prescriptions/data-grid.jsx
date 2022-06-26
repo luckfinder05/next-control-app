@@ -65,7 +65,7 @@ export default function DataGrid(props) {
       <Head>
         <title>Таблица предписаний</title>
       </Head>
-      <h1>Таблица предписаний</h1>
+      <h2>Таблица предписаний</h2>
       <div
         className="ag-theme-alpine"
         style={{ height: "70vh", width: "100%" }}
