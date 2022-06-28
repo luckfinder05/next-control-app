@@ -7,6 +7,7 @@ import { Table, Container } from "react-bootstrap";
 function PrescriptionsPage(props) {
   const router = useRouter();
   const [tableData, setTableData] = useState([]);
+  const [needToUpdateData, setNeedToUpdateData] = useState(true);
   const [tableStats, setTableStats] = useState({
     total: 0,
     resolved: 0,
@@ -14,16 +15,19 @@ function PrescriptionsPage(props) {
   });
 
   useEffect(() => {
-    fetch("/api/gss/getData")
-      .then((result) => result.json())
-      .then((fetchData) => setTableData(fetchData))
-      .catch((err) => console.error(err));
+    if (needToUpdateData) {
+      fetch("/api/gss/getData")
+        .then((result) => result.json())
+        .then((fetchData) => setTableData(fetchData))
+        .then(() => setNeedToUpdateData(false))
+        .catch((err) => console.error(err));
 
-    fetch("/api/gss/getStats")
-      .then((result) => result.json())
-      .then((fetchData) => setTableStats(fetchData))
-      .catch((err) => console.error(err));
-  }, []);
+      fetch("/api/gss/getStats")
+        .then((result) => result.json())
+        .then((fetchData) => setTableStats(fetchData))
+        .catch((err) => console.error(err));
+    }
+  }, [needToUpdateData]);
 
   return (
     <div style={{ width: "100%" }}>
@@ -37,7 +41,7 @@ function PrescriptionsPage(props) {
           Таблица замечаний в Google в новой вкладке
         </a>
       </Container>
-      
+
       <Container className="mt-2 border rounded">
         <h2>Статистика</h2>
         <Table responsive bordered={true} size="sm">
@@ -57,7 +61,10 @@ function PrescriptionsPage(props) {
           </tbody>
         </Table>
       </Container>
-      <ControlledTabs tableData={tableData}></ControlledTabs>
+      <ControlledTabs
+        updateData={setNeedToUpdateData}
+        tableData={tableData}
+      ></ControlledTabs>
 
       {/* <table></table> */}
     </div>

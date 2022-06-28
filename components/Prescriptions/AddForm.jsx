@@ -74,6 +74,7 @@ function AddForm(props) {
         .then((returnedData) => {
           setIsDataPosting(false);
           console.log(returnedData);
+          props.updateData(true);
         })
         .catch((err) => console.error(err));
     }

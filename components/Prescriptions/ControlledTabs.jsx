@@ -21,7 +21,7 @@ const ControlledTabs = (props) => {
         <TableGrid tableData={props.tableData} />
       </Tab>
       <Tab eventKey="add" title="Добавить">
-        <AddForm tableData={props.tableData} />
+        <AddForm tableData={props.tableData} updateData={props.updateData} />
       </Tab>
       <Tab eventKey="update" title="Изменить">
         <AddForm />
