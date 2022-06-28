@@ -10,9 +10,9 @@ function Home() {
         <title>Главная страница</title>
       </Head>
       <div className="card mt-4">
-        <h4 className="card-header">
-          You&amp;re logged in with Next.js 11 & JWT!!
-        </h4>
+        <h1 className="card-header">
+          Application for successful control of construction site
+        </h1>
         <div className="card-body">
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab mollitia
