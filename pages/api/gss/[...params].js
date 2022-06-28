@@ -37,8 +37,8 @@ async function handler(request, response) {
     else if (request.url.split('/').at(-1) === 'getStats') {
       spreadSheetRequest.range = statsRange;
       const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
-      const [total, unresolved, resolved] = result;
-      return response.status(200).json({ total, unresolved, resolved })
+      const [total, resolved, unresolved] = result;
+      return response.status(200).json({ total, resolved, unresolved })
     }
   } else if (request.method === 'POST') {
     const values = [
