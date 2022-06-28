@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Form, InputGroup, Tab, Tabs } from "react-bootstrap";
 import AddForm from "./AddForm";
 import DataGrid from "./data-grid";
+import TableGrid from "./Table";
 
 const ControlledTabs = (props) => {
-  const [key, setKey] = useState("add");
+  const [key, setKey] = useState("table-2");
 
   return (
     <Tabs
@@ -13,8 +14,11 @@ const ControlledTabs = (props) => {
       onSelect={(k) => setKey(k)}
       className="mb-3"
     >
-      <Tab eventKey="table" title="Таблица">
+      {/* <Tab eventKey="table" title="Таблица">
         <DataGrid tableData={props.tableData} />
+      </Tab> */}
+      <Tab eventKey="table-2" title="Таблица - 2">
+        <TableGrid tableData={props.tableData} />
       </Tab>
       <Tab eventKey="add" title="Добавить">
         <AddForm tableData={props.tableData} />
