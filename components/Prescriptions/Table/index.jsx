@@ -1,4 +1,4 @@
-import DataTable from "react-data-table-Component";
+import DataTable from "react-data-table-component";
 import styled from "styled-components";
 import {
   Alert,
