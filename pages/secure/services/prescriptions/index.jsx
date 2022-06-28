@@ -40,7 +40,7 @@ function PrescriptionsPage(props) {
       
       <Container className="mt-2 border rounded">
         <h2>Статистика</h2>
-        <Table responsive bordered={true}>
+        <Table responsive bordered={true} size="sm">
           <tbody>
             <tr>
               <td>Всего замечаний:</td>
