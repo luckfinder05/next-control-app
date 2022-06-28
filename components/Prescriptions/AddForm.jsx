@@ -17,8 +17,8 @@ function AddForm(props) {
   const tableData = props.tableData;
   const [docNumber, setDocNumber] = useState(null);
   const [docDate, setDocDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+    new Date().toLocaleDateString().replace(/(\d{2}).(\d{2}).(\d{4})/, "$3-$2-$1")
+    );
   const [isDataPosting, setIsDataPosting] = useState(false);
   const [orderText, setOrderText] = useState("");
   const contractor = useInputListGroup(tableData, "Подрядчик");
@@ -50,7 +50,6 @@ function AddForm(props) {
 
   useEffect(() => {
     if (isDataPosting) {
-      const pattern = /(\d{4})-(\d{2})-(\d{2})/;
       fetch("/api/gss/postData", {
         method: "POST",
         headers: {
