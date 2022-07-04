@@ -65,8 +65,12 @@ const customStyles = {
   rows: {
     style: {
       minHeight: "72px", // override the row height
-      border: "1px solid black",
-      "&:hover": { "border-shadow": "1px solid red" },
+      // border: "1px solid black",
+      "&:hover": {
+        boxShadow: `-10px 0px 13px -7px #000000,
+          10px 0px 13px -7px #000000,
+          5px 5px 15px 5px rgba(0,0,0,0.1);`,
+      },
     },
   },
   // columns: {
