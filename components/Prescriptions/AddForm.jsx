@@ -15,10 +15,13 @@ import { InputGroupTextSelect } from "../Helpers";
 
 function AddForm(props) {
   const tableData = props.tableData;
-  const [docNumber, setDocNumber] = useState(null);
+  const [docNumber, setDocNumber] = useState(0);
+  const [oldDocNumber, setOldDocNumber] = useState(0);
   const [docDate, setDocDate] = useState(
-    new Date().toLocaleDateString().replace(/(\d{2}).(\d{2}).(\d{4})/, "$3-$2-$1")
-    );
+    new Date()
+      .toLocaleDateString()
+      .replace(/(\d{2}).(\d{2}).(\d{4})/, "$3-$2-$1")
+  );
   const [isDataPosting, setIsDataPosting] = useState(false);
   const [orderText, setOrderText] = useState("");
   const contractor = useInputListGroup(tableData, "Подрядчик");
@@ -43,7 +46,9 @@ function AddForm(props) {
   useEffect(() => {
     if (Array.isArray(tableData)) {
       if (tableData.length !== 0) {
-        setDocNumber(Number(tableData.at(-1)["№ предписания"]));
+        const docNumber = Number(tableData.at(-1)["№ предписания"]);
+        setDocNumber(docNumber);
+        setOldDocNumber(docNumber);
       }
     }
   }, [tableData]);
@@ -80,10 +85,11 @@ function AddForm(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDataPosting]);
 
-  function docNumberHandler(value) {
-    setDocNumber(
-      Number(tableData.at(-1)["№ предписания"]) + value.target.checked
-    );
+  function docNumberHandler(ev) {
+    const num = Number(ev.target.value);
+    if (num === oldDocNumber || num === oldDocNumber + 1) {
+      setDocNumber(num);
+    }
   }
 
   function pasteButtonHandler(ev) {
@@ -117,31 +123,34 @@ function AddForm(props) {
         className="mb-3 border rounded p-2"
         controlId="addForm.ControlInput1"
       >
-        <Stack direction="horizontal" gap={1}>
-          <Form.Check
-            className="col-3"
-            type="switch"
-            id="custom-switch"
-            label="Новое предписание"
-            onChange={docNumberHandler}
-          />
-          <Form.Control
-            type="text"
-            plaintext
-            readOnly
-            value={`№ Предписания: ${docNumber}`}
-            placeholder={`№ Предписания: ${docNumber}`}
-          />
-          <Form.Control
-            type="date"
-            name="orderDate"
-            onChange={docDateHandler}
-            defaultValue={docDate}
-          />
-        </Stack>
-        <Form.Text id="docNumberHelpBlock" muted>
-          Переключи, если это первый пункт нового предписания.
-        </Form.Text>
+        <div className="d-flex flex-wrap flex-sm-column flex-lg-row">
+          <InputGroup className="mt-1 col-md-6">
+            <InputGroup.Text onClick={setFocusToTextInput}>
+              № предписания
+            </InputGroup.Text>
+            <Form.Control
+              className="d-block col-lg-6"
+              type="number"
+              value={docNumber}
+              min={oldDocNumber}
+              max={oldDocNumber + 1}
+              placeholder={oldDocNumber}
+              onChange={docNumberHandler}
+            />
+          </InputGroup>
+          <InputGroup className="mt-1 col-md-6">
+            <InputGroup.Text onClick={setFocusToTextInput}>
+              Выдано
+            </InputGroup.Text>
+            <Form.Control
+              // className="d-block col-sm-8"
+              type="date"
+              name="orderDate"
+              onChange={docDateHandler}
+              defaultValue={docDate}
+            />
+          </InputGroup>
+        </div>
 
         <Form.Group className="mb-3 border rounded p-2">
           <h3>Замечания</h3>
@@ -183,9 +192,7 @@ function AddForm(props) {
           </InputGroup>
 
           <InputGroup className="mt-1">
-            <InputGroup.Text
-            //  onClick={setFocusToTextInput}
-            >
+            <InputGroup.Text onClick={setFocusToTextInput}>
               Предписано
             </InputGroup.Text>
             <Form.Control
@@ -197,9 +204,7 @@ function AddForm(props) {
           </InputGroup>
 
           <InputGroup className="mt-1">
-            <InputGroup.Text
-            //  onClick={setFocusToTextInput}
-            >
+            <InputGroup.Text onClick={setFocusToTextInput}>
               Устранить до
             </InputGroup.Text>
             <Form.Control
