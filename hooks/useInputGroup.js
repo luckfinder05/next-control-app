@@ -5,11 +5,12 @@ function useInputListGroup(dataAray, fieldName) {
   const [value, setValue] = useState('');
 
   function createUniqueOptionsList(dataset, fieldName) {
-    return [...new Set(dataset.map((el) => el[fieldName]))].map(
+    return [...new Set(dataset.map((el) => el[fieldName]).sort())].map(
       (el, index) => {
+        const text = el.slice(0,1).toUpperCase() + el.slice(1);
         return (
-          <option key={index} value={el}>
-            {el}
+          <option key={index} value={text}>
+            {text}
           </option>
         );
       }
