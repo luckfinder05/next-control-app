@@ -16,7 +16,6 @@ async function handler(request, response) {
     range: SheetRange,
     key: APIkey
   }
-
   if (request.method === 'GET') {
     if (request.url.split('/').at(-1) === 'getData') {
 
@@ -35,10 +34,8 @@ async function handler(request, response) {
 
     }
     else if (request.url.split('/').at(-1) === 'getStats') {
-      spreadSheetRequest.range = statsRange;
-      const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
-      const [total, resolved, unresolved] = result;
-      return response.status(200).json({ total: total[0], resolved: resolved[0], unresolved: unresolved[0] })
+      const result =await getStats();
+      return response.status(200).json(result)
     }
   } else if (request.method === 'POST') {
     const values = [
@@ -64,6 +61,38 @@ async function handler(request, response) {
     }
   }
   return null
+}
+
+async function getStats() {
+  const sheets = google.sheets({ version: 'v4' });
+  const requestObject = {
+    spreadsheetId: spreadsheetId,
+    range: SheetRange,
+    key: APIkey
+  }
+  requestObject.range = statsRange;
+  const stats = (await sheets.spreadsheets.values.get(requestObject)).data.values;
+  const [total, resolved, unresolved] = stats.map(el => el[0]);
+
+  requestObject.range = 'Обзор!A24:E62'
+  const weeklyGivenList = (await sheets.spreadsheets.values.get(requestObject)).data.values;
+  const weeklyGivenCount = weeklyGivenList ? weeklyGivenList.length : 0;
+
+  requestObject.range = 'Обзор!I24:O62';
+  const weeklyResolvedList = (await sheets.spreadsheets.values.get(requestObject)).data.values;
+  const weeklyResolvedCount = weeklyResolvedList ? weeklyResolvedList.length : 0;
+
+  const result = {
+    total,
+    resolved,
+    unresolved,
+    weeklyGivenCount,
+    weeklyGivenList,
+    weeklyResolvedCount,
+    weeklyResolvedList
+  }
+
+  return result;
 }
 
 function transformData(rows) {
