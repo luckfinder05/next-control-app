@@ -55,6 +55,7 @@ function AddForm(props) {
 
   useEffect(() => {
     if (isDataPosting) {
+      const pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
       fetch("/api/gss/postData", {
         method: "POST",
         headers: {
@@ -198,8 +199,8 @@ function AddForm(props) {
             <Form.Control
               as="textarea"
               rows={2}
-              // value={orderText}
-              // onChange={orderTextHandler}
+            // value={orderText}
+            // onChange={orderTextHandler}
             />
           </InputGroup>
 
@@ -209,15 +210,15 @@ function AddForm(props) {
             </InputGroup.Text>
             <Form.Control
               className="flex-shrink-1"
-              // value={orderText}
-              // onChange={orderTextHandler}
+            // value={orderText}
+            // onChange={orderTextHandler}
             />
             <Form.Control
               className="ms-auto"
               type="date"
               name="orderDate"
-              // onChange={docDateHandler}
-              // defaultValue={docDate}
+            // onChange={docDateHandler}
+            // defaultValue={docDate}
             />
           </InputGroup>
 
