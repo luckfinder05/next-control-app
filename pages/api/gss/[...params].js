@@ -34,7 +34,7 @@ async function handler(request, response) {
 
     }
     else if (request.url.split('/').at(-1) === 'getStats') {
-      const result =await getStats();
+      const result = await getStats();
       return response.status(200).json(result)
     }
   } else if (request.method === 'POST') {
@@ -82,6 +82,13 @@ async function getStats() {
   const weeklyResolvedList = (await sheets.spreadsheets.values.get(requestObject)).data.values;
   const weeklyResolvedCount = weeklyResolvedList ? weeklyResolvedList.length : 0;
 
+  requestObject.range = 'Сводная таблица!A:G';
+  const unresolvedStatsList = (await sheets.spreadsheets.values.get(requestObject))
+    .data.values.slice(2).map(el => {
+      return [el[0].slice(el[0].indexOf('(') + 1, -1), el.at(-1)]
+    });
+  const unresolvedStatsCount = weeklyResolvedList ? weeklyResolvedList.length : 0;
+
   const result = {
     total,
     resolved,
@@ -89,7 +96,9 @@ async function getStats() {
     weeklyGivenCount,
     weeklyGivenList,
     weeklyResolvedCount,
-    weeklyResolvedList
+    weeklyResolvedList,
+    unresolvedStatsCount,
+    unresolvedStatsList
   }
 
   return result;
