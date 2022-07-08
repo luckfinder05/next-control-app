@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ControlledTabs from "../../../../components/Prescriptions/ControlledTabs";
-import { Table, Container } from "react-bootstrap";
+import { Table, Container, Spinner } from "react-bootstrap";
 
 function PrescriptionsPage(props) {
   const router = useRouter();
@@ -19,12 +19,12 @@ function PrescriptionsPage(props) {
       fetch("/api/gss/getData")
         .then((result) => result.json())
         .then((fetchData) => setTableData(fetchData))
-        .then(() => setNeedToUpdateData(false))
         .catch((err) => console.error(err));
 
       fetch("/api/gss/getStats")
         .then((result) => result.json())
         .then((fetchData) => setTableStats(fetchData))
+        .then(() => setNeedToUpdateData(false))
         .catch((err) => console.error(err));
     }
   }, [needToUpdateData]);
@@ -48,15 +48,24 @@ function PrescriptionsPage(props) {
           <tbody>
             <tr>
               <td>Всего замечаний:</td>
-              <td>{tableStats.total}</td>
+              <td>
+                {tableStats.total}
+                {needToUpdateData && <Spinner animation="border" />}
+              </td>
             </tr>
             <tr>
               <td>Устранено:</td>
-              <td>{tableStats.resolved}</td>
+              <td>
+                {tableStats.resolved}
+                {needToUpdateData && <Spinner animation="border" />}
+              </td>
             </tr>
             <tr>
               <td>Не устранено:</td>
-              <td>{tableStats.unresolved}</td>
+              <td>
+                {tableStats.unresolved}
+                {needToUpdateData && <Spinner animation="border" />}
+              </td>
             </tr>
           </tbody>
         </Table>
