@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, InputGroup, Tab, Tabs } from "react-bootstrap";
 import AddForm from "./AddForm";
-import DataGrid from "./data-grid";
+// import DataGrid from "./data-grid";
 import TableGrid from "./Table";
 
 const ControlledTabs = (props) => {
