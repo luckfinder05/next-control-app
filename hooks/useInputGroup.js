@@ -7,12 +7,14 @@ function useInputListGroup(dataAray, fieldName) {
   function createUniqueOptionsList(dataset, fieldName) {
     return [...new Set(dataset.map((el) => el[fieldName]).sort())].map(
       (el, index) => {
-        const text = el.slice(0,1).toUpperCase() + el.slice(1);
-        return (
-          <option key={index} value={text}>
-            {text}
-          </option>
-        );
+        if (el) {
+          const text = el.slice(0, 1).toUpperCase() + el.slice(1);
+          return (
+            <option key={index} value={text}>
+              {text}
+            </option>
+          );
+        }
       }
     );
   }
