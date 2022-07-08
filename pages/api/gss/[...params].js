@@ -3,33 +3,41 @@ import { authorize } from '../../../lib/google/google-auth';
 const { google } = require('googleapis');
 const APIkey = process.env.GOOGLE_API;
 const spreadsheetId = process.env.SPREADSHEET_ID;
-const SheetRange = 'Предписания!A:K';
-const statsRange = 'Обзор!B8:B10'
+const ordersSheetRange = 'Предписания!A:K';
+const statsRange = 'Обзор!B8:B10';
+const unresolvedStatsRange = 'Сводная таблица!A:G';
+const weeklyGivenRange = 'Обзор!A24:E62';
+const weeklyResolvedRange = 'Обзор!I24:O62';
+const ordersHeaders = [
+  '_uid',
+  '№ предписания',
+  '№ замечания',
+  'Вид контроля',
+  'Дата выдачи замечания',
+  'Содержание предписания',
+  'Статус замечания',
+  "Дата устранения",
+  'Подрядчик',
+  'Представитель ССК',
+  'Примечание']
 
 const auth = authorize();
 const googleService = google.sheets({ version: 'v4', auth });
 
 async function handler(request, response) {
-  const sheets = google.sheets({ version: 'v4' });
-  const spreadSheetRequest = {
-    spreadsheetId: spreadsheetId,
-    range: SheetRange,
-    key: APIkey
-  }
   if (request.method === 'GET') {
     if (request.url.split('/').at(-1) === 'getData') {
-
       try {
-        const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
-        return response.status(200).json(transformData(result));
+        const result = await getValuesFromRange(ordersSheetRange);
+        return response.status(200).json(transformOrdersData(result));
       } catch (err) {
         console.error(err);
         return response.status(500).send({ error: err })
       }
     }
     else if (request.url.split('/').at(-1) === 'getContractors') {
-      const result = (await sheets.spreadsheets.values.get(spreadSheetRequest)).data.values;
-      const contractorsList = [...new Set(transformData(result).map((el) => el["Подрядчик"]))]
+      const result = await getValuesFromRange(ordersSheetRange)
+      const contractorsList = [...new Set(transformOrdersData(result).map((el) => el["Подрядчик"]))]
       return response.status(200).json(contractorsList);
 
     }
@@ -38,19 +46,10 @@ async function handler(request, response) {
       return response.status(200).json(result)
     }
   } else if (request.method === 'POST') {
-    const values = [
-      request.body['_uid'],
-      request.body['№ предписания'],
-      request.body['№ замечания'],
-      request.body['Вид контроля'],
-      request.body['Дата выдачи замечания'],
-      request.body['Содержание предписания'],
-      request.body['Статус замечания'],
-      request.body["Дата устранения"],
-      request.body['Подрядчик'],
-      request.body['Представитель ССК'],
-      request.body['Примечание']
-    ]
+    ordersHeaders.map(header => {
+      return request.body[header]
+    })
+    const values = ordersHeaders.map(header => request.body[header])
 
     try {
       const result = await appendValues(values)
@@ -64,30 +63,23 @@ async function handler(request, response) {
 }
 
 async function getStats() {
-  const sheets = google.sheets({ version: 'v4' });
-  const requestObject = {
-    spreadsheetId: spreadsheetId,
-    range: SheetRange,
-    key: APIkey
-  }
-  requestObject.range = statsRange;
-  const stats = (await sheets.spreadsheets.values.get(requestObject)).data.values;
+
+  const stats = await getValuesFromRange(statsRange)
   const [total, resolved, unresolved] = stats.map(el => el[0]);
 
-  requestObject.range = 'Обзор!A24:E62'
-  const weeklyGivenList = (await sheets.spreadsheets.values.get(requestObject)).data.values;
-  const weeklyGivenCount = weeklyGivenList ? weeklyGivenList.length : 0;
+  const weeklyGivenList = await getValuesFromRange(weeklyGivenRange)
+  const weeklyGivenCount = weeklyGivenList.length;
 
-  requestObject.range = 'Обзор!I24:O62';
-  const weeklyResolvedList = (await sheets.spreadsheets.values.get(requestObject)).data.values;
-  const weeklyResolvedCount = weeklyResolvedList ? weeklyResolvedList.length : 0;
+  const weeklyResolvedList = await getValuesFromRange(weeklyResolvedRange)
+  const weeklyResolvedCount = weeklyResolvedList.length;
 
-  requestObject.range = 'Сводная таблица!A:G';
-  const unresolvedStatsList = (await sheets.spreadsheets.values.get(requestObject))
-    .data.values.slice(2).map(el => {
+  //Data from Pivot Table
+  const unresolvedStatsList = (await getValuesFromRange(unresolvedStatsRange))
+    .slice(2).map(el => {
       return [el[0].slice(el[0].indexOf('(') + 1, -1), el.at(-1)]
     });
-  const unresolvedStatsCount = weeklyResolvedList ? weeklyResolvedList.length : 0;
+  const unresolvedStatsCount = unresolvedStatsList.length;
+
 
   const result = {
     total,
@@ -104,23 +96,26 @@ async function getStats() {
   return result;
 }
 
-function transformData(rows) {
+async function getValuesFromRange(range) {
+  const sheets = google.sheets({ version: 'v4' });
+  const requestObject = {
+    spreadsheetId,
+    range,
+    key: APIkey
+  }
+  const result = (await sheets.spreadsheets.values.get(requestObject)).data.values;
+  if (!result) return []
+  return result;
+}
+
+function transformOrdersData(rows) {
   if (rows.length) {
-    const arr = rows.slice(1);
-    const result = arr.map((row) => {
-      return {
-        '_uid': row[0],
-        '№ предписания': row[1],
-        '№ замечания': row[2],
-        'Вид контроля': row[3] || '',
-        'Дата выдачи замечания': row[4],
-        'Содержание предписания': row[5],
-        'Статус замечания': row[6],
-        'Дата устранения': row[7] || '',
-        'Подрядчик': row[8] || '',
-        'Представитель ССК': row[9] || '',
-        'Примечание': row[10] || ''
-      }
+    const result = rows.slice(1).map((row) => {
+      return row.reduce((result, cell, index) => {
+        const header = ordersHeaders[index];
+        result[header] = cell;
+        return result
+      }, {});
     });
     return result;
   } else { return null; }
@@ -148,13 +143,13 @@ async function appendValues(_values) {
 
     const result = await googleService.spreadsheets.values.append({
       spreadsheetId,
-      range: SheetRange,
+      range: ordersSheetRange,
       valueInputOption: "USER_ENTERED",
       insertDataOption: "INSERT_ROWS",
       resource,
     });
 
-    const sheetProperties = await getSheetId(auth, spreadsheetId, SheetRange)
+    const sheetProperties = await getSheetId(auth, spreadsheetId, ordersSheetRange)
     if (sheetProperties.sheetId) {
       const borderStyle = {
         "style": "SOLID",
