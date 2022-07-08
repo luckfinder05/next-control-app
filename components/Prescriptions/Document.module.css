@@ -1,0 +1,181 @@
+.template {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 1cm;
+    margin-left: 2cm;
+  }
+
+  .templateBody {
+    width: 210mm;
+    margin: 0 auto;
+    padding: 10mm 10mm 20mm 20mm;
+  }
+
+  .management {
+    display: none;
+  }
+
+  .input {
+    display: none;
+  }
+
+  /* div {
+    widows: 4;
+    orphans: 3;
+  } */
+}
+
+
+
+/* .template {
+  font-size: 12pt;
+  font-family: "Times New Roman", Times, serif;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.template {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 1cm;
+    margin-left: 2cm;
+  }
+
+  body {
+    width: 210mm;
+    margin: 0 auto;
+    padding: 10mm 10mm 20mm 20mm;
+  }
+
+  .management {
+    display: none;
+  }
+
+  .input {
+    display: none;
+  }
+
+  div {
+    widows: 4;
+    orphans: 3;
+  }
+}
+
+.document {
+  width: 210mm;
+  margin: 0 auto;
+
+}
+
+.document .signs {
+  margin-top: 30px;
+  page-break-inside: avoid;
+}
+
+.document .signs-grid {
+  display: grid;
+
+  grid-template-columns: 6fr 3fr 2fr;
+  grid-template-rows: repeat(4, 1fr);
+  grid-auto-rows: minmax(30px, auto);
+  row-gap: 10px;
+  column-gap: 10px;
+  align-items: flex-end;
+}
+
+.document .signs-subheader-title {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.document .sign-field {
+  border-bottom: thin solid black;
+}
+
+.content {
+  margin-top: 20px;
+  text-align: justify;
+}
+
+.prescription-document span {
+  font-style: italic;
+}
+
+
+.order-title {
+  font-weight: 900;
+}
+
+.prescription-list {
+  position: relative;
+  padding-left: 20px;
+}
+
+.prescription-list .management {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.prescription-list .add,
+.delete {
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+.prescription-list .add:hover,
+.delete:hover {
+  cursor: pointer;
+}
+
+
+
+.editable:hover {
+  background-color: yellow;
+}
+
+.prescription-item::before {
+  content: "X";
+  cursor: pointer;
+  font-family: monospace;
+  display: block;
+  position: absolute;
+  left: -15px;
+}
+
+.prescription-item:hover:before {
+  color: red;
+}
+
+.prescription-item::before::after {
+  content: "+";
+  cursor: pointer;
+  font-family: monospace;
+  display: block;
+  position: absolute;
+  left: -45px;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 40px;
+  position: relative;
+  min-height: 2cm;
+}
+
+.footer-container {
+  position: absolute;
+  bottom: 0%;
+
+}
+
+.footer-container.prescription-check {
+  text-align: center;
+} */
