@@ -1,3 +1,8 @@
+export default function test() {
+    return 0
+}
+
+
 // import { yupResolver } from "@hookform/resolvers/yup";
 // import { useRouter } from "next/router";
 // // import { useEffect } from "react";
