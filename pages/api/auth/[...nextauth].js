@@ -9,7 +9,7 @@ import { User } from "../../../models/User";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
-export default NextAuth({
+export const authOptions = {
   // https://next-auth.js.org/configuration/providers/oauth
   providers: [
     CredentialsProvider({
@@ -48,7 +48,6 @@ export default NextAuth({
       const validPassword = bcrypt.compareSync(credentials.password, user.password);
       if (!validPassword) return false;
       user.name = credentials.username;
-      console.log('user: ', user);
       return user
     },
     async redirect({ url, baseUrl }) {
@@ -61,4 +60,5 @@ export default NextAuth({
       return token
     }
   },
-})
+}
+export default NextAuth(authOptions)
