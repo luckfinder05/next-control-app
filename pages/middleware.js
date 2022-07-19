@@ -1,5 +1,3 @@
-
-
 export function middleware(request) {
     if (request.nextUrl.pathname.startsWith('/about')) {
         // This logic is only applied to /about
