@@ -56,6 +56,7 @@ export const authOptions = {
       return baseUrl
     },
     async session({ session, user, token }) {
+      session.user.email = ""
       return session
     },
     async jwt({ token, user, account, profile, isNewUser }) {
