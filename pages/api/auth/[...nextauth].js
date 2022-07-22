@@ -1,5 +1,4 @@
 import NextAuth from "next-auth"
-import { getToken } from "next-auth/jwt"
 import CredentialsProvider from "next-auth/providers/credentials"
 // import clientPromise from "./lib/mongodb"
 const bcrypt = require('bcryptjs');
