@@ -42,6 +42,9 @@ export const authOptions = {
   theme: {
     colorScheme: "light",
   },
+  session: {
+    maxAge: 1 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       const validPassword = bcrypt.compareSync(credentials.password, user.password);
