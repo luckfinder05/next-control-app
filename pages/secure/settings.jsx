@@ -46,24 +46,41 @@ function SettingsPage(props) {
           Userlist from DB
         </h4>
         <div className="card-body">
-          <h6>Users in database</h6>
           {users && (
-            <ul>
-              {users.map((user) => (
-                <li key={user._id}>
-
-                  {user._id} {user.username} - {user.roles}
-                  <Button
-                    variant="danger"
-                    type="submit"
-                    onClick={(ev) => removeHandler(ev, user._id)}
-                    value="Remove user"
-                  >
-                    Remove user
-                  </Button>
-                </li>
-              ))}
-            </ul>
+            <table style={{
+              textWrap: "normal",
+              wordWrap: "break-word",
+              // maxWidth: "900px",
+              width: "100%",
+              border: "1px solid black",
+              borderCollapse: "collapse"
+            }}>
+              <thead>
+                <tr style={{ border: "1px solid black" }}>
+                  <td>userID</td>
+                  <td>username</td>
+                  <td>user roles</td>
+                  <td style={{ textAlign: "center" }}>action</td>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user._id}>
+                    <td>{user._id}</td><td>{user.username}</td> <td>{user.roles}</td>
+                    <td style={{ textAlign: "center" }}>
+                      <Button
+                        variant="danger"
+                        type="submit"
+                        onClick={(ev) => removeHandler(ev, user._id)}
+                        value="Remove user"
+                      >
+                        Remove user
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
           {!users && <div className="spinner-border spinner-border-sm"></div>}
         </div>
