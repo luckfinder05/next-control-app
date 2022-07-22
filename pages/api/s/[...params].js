@@ -13,6 +13,7 @@ const ApiHandler = async (req, res) => {
   const secret = process.env.SECRET
   const token = await getToken({ req, secret })
   if (!token) {
+    console.log('token: ', token);
     // Not Signed in
     return res.status(401).json({ message: "Unauthorized user" });
   }
