@@ -12,7 +12,7 @@ export default MyApp;
 
 function MyApp({ data, Component, appProps, pageProps }) {
   return (
-    <SessionProvider session={pageProps.session} refetchInterval={60}>
+    <SessionProvider session={pageProps.session} refetchInterval={5*60}>
       <Head>
         <title>Control App</title>
       </Head>
