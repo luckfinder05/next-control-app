@@ -2,7 +2,6 @@
 import dbConnect from "../../../lib/mongooseConnect";
 import { getToken } from "next-auth/jwt"
 import LinkShortener from "../../../lib/linkShortener";
-import linkShortener from "../../../lib/linkShortener";
 
 const ApiHandler = async (req, res) => {
 
