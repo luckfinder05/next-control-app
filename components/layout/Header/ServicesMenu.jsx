@@ -11,6 +11,9 @@ function ServicesMenu() {
       <NavDropdownItem href="/secure/services/short/create" passHref>
         Укорачиватель ссылок
       </NavDropdownItem>
+      <NavDropdownItem href="/secure/services/short/list" passHref>
+        Список коротких ссылок
+      </NavDropdownItem>
     </NavDropdown>
   );
 }
