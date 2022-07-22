@@ -8,7 +8,7 @@ const ApiHandler = async (req, res) => {
     return LinkShortener.getLink(req, res);
   }
   const secret = process.env.SECRET
-  const token = await getToken({ req, secret })
+  const token = await getToken({ req })
   if (!token) {
     console.error('token: ', token);
     // Not Signed in
