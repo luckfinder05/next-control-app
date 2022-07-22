@@ -54,7 +54,6 @@ export async function getUsers() {
     try {
         await dbConnect();
         const users = await User.find({});
-        console.log('users: ', users);
         if (users) return users;
     }
     catch (err) {
