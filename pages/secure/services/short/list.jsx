@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'react-bootstrap';
 import linkShortener from '../../../../lib/linkShortener';
 
-function list(props) {
+export default function list(props) {
 
     function removeHandler(ev, id) {
         console.log('id: ', id);
@@ -15,6 +15,7 @@ function list(props) {
             .then((res) => {
                 return res.json();
             }).then((res => { console.log(res) }))
+            .catch(err => console.error(err));
     }
 
     return (
@@ -57,8 +58,6 @@ function list(props) {
         </table >
     )
 }
-
-export default list
 
 export async function getServerSideProps(context) {
     const shortLinks = JSON.parse(JSON.stringify(await linkShortener.listAllLinks()));
