@@ -1,11 +1,8 @@
 // path: /s/:params
-import dbConnect from "../../../lib/mongooseConnect";
 import { getToken } from "next-auth/jwt"
 import LinkShortener from "../../../lib/linkShortener";
 
 const ApiHandler = async (req, res) => {
-
-  await dbConnect();
 
   if (req.method === 'GET') {
     return LinkShortener.getLink(req, res);
@@ -13,9 +10,9 @@ const ApiHandler = async (req, res) => {
   const secret = process.env.SECRET
   const token = await getToken({ req, secret })
   if (!token) {
-    console.log('token: ', token);
+    console.error('token: ', token);
     // Not Signed in
-    return res.status(401).json({ message: "Unauthorized user" });
+    return res.status(401).json({ message: "Unauthorized user", token });
   }
   else {
     if (req.method === 'POST') {
