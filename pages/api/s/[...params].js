@@ -21,7 +21,7 @@ const ApiHandler = async (req, res) => {
       return LinkShortener.addLink(req, res);
     }
     if (req.method === 'DELETE') {
-      return linkShortener.remove(req, res);
+      return LinkShortener.remove(req, res);
     }
   }
 }
