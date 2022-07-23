@@ -40,17 +40,14 @@ function UserList(props) {
 							<td>{user.username}</td>
 							<td>{user.roles}</td>
 							<td className={classes.centerText}>
-								{user._id !== session.user.id &&
-									(<Button
-										variant="danger"
-										type="submit"
-										onClick={(ev) => removeHandler(ev, user._id)}
-										value="Remove user"
-									>
-										Remove user
-									</Button>)
-
-								}
+								<Button
+									variant="danger"
+									type="submit"
+									disabled={user._id === session.user.id}
+									onClick={(ev) => removeHandler(ev, user._id)}
+									value="Remove user">
+									Remove user
+								</Button>
 							</td>
 						</tr>
 					))}
