@@ -1,8 +1,10 @@
+import { useSession } from "next-auth/react"
 import { Button } from "react-bootstrap";
 import classes from './userList.module.scss'
 
 function UserList(props) {
 	const { users, setUsers } = props;
+	const { data: session, status } = useSession()
 
 	function removeHandler(ev, id) {
 		fetch('/api/users',
@@ -33,12 +35,12 @@ function UserList(props) {
 				<tbody>
 					{users.map((user, counter) => (
 						<tr key={user._id}>
-							<td>{counter}</td>
+							<td>{counter + 1}</td>
 							<td>{user._id}</td>
 							<td>{user.username}</td>
 							<td>{user.roles}</td>
 							<td className={classes.centerText}>
-								{users.length > 1 &&
+								{user._id !== session.user.id &&
 									(<Button
 										variant="danger"
 										type="submit"
@@ -46,7 +48,9 @@ function UserList(props) {
 										value="Remove user"
 									>
 										Remove user
-									</Button>)}
+									</Button>)
+
+								}
 							</td>
 						</tr>
 					))}
