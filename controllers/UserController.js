@@ -81,8 +81,8 @@ export async function addUser(req, res) {
         const passwordHash = bcrypt.hashSync(password, salt);
         const userRole = await Role.findOne({ value: role || "USER" });
         const user = new User({ username, email, password: passwordHash, roles: [userRole.value] });
-        await user.save();
-        return res.status(200).json({ message: "Пользователь успешно зарегистрирован" });
+        const newUser = await user.save();
+        return res.status(200).json({ message: "Пользователь успешно зарегистрирован", user: newUser });
     } catch (e) {
         console.dir(e);
         res.status(400).json({
@@ -97,7 +97,7 @@ export async function removeUser(req, res) {
         const { id } = req.body;
         await dbConnect();
         const users = await User.deleteOne({ _id: id });
-        if (users) return res.status(200).json({ message: "User was deleted" });
+        if (users) return res.status(200).json({ message: "User was deleted", user: { _id: id } });
     }
     catch (err) {
         console.error(err);
