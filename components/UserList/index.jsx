@@ -1,9 +1,10 @@
 import { Button } from "react-bootstrap";
 import classes from './userList.module.scss'
 
-function UserList({ users }) {
+function UserList(props) {
+	const { users, setUsers } = props;
+
 	function removeHandler(ev, id) {
-		console.log('id: ', id);
 		fetch('/api/users',
 			{
 				method: 'DELETE',
@@ -12,7 +13,9 @@ function UserList({ users }) {
 			})
 			.then((res) => {
 				return res.json();
-			}).then((res => { console.log(res) }))
+			}).then(res => {
+				setUsers(users.filter(el => el._id !== id))
+			}).catch(err => console.error(err))
 	}
 
 	return (
@@ -35,14 +38,15 @@ function UserList({ users }) {
 							<td>{user.username}</td>
 							<td>{user.roles}</td>
 							<td className={classes.centerText}>
-								<Button
-									variant="danger"
-									type="submit"
-									onClick={(ev) => removeHandler(ev, user._id)}
-									value="Remove user"
-								>
-									Remove user
-								</Button>
+								{users.length > 1 &&
+									(<Button
+										variant="danger"
+										type="submit"
+										onClick={(ev) => removeHandler(ev, user._id)}
+										value="Remove user"
+									>
+										Remove user
+									</Button>)}
 							</td>
 						</tr>
 					))}
