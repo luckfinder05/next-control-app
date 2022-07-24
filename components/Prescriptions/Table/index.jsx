@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 
 import React, { useEffect, useRef, useState } from "react";
+import useDebounce from "../../../hooks/useDebounce";
 
 // data provides access to your row data
 const ExpandedComponent = ({ data }) => {
@@ -210,51 +211,120 @@ export default function TableGrid(props) {
     },
   ];
 
-  // const [filterText, setFilterText] = useState("");
-  // const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  // const filteredItems = () => {
-  //   console.log('data.length: ', data.length);
-  //   if (data.length !== 0) {
-  //     return data.filter(
-  //       (item) =>
-  //         item["Содержание предписания"] &&
-  //         item["Содержание предписания"]
-  //           .toLowerCase()
-  //           .includes(filterText.toLowerCase())
-  //     );
-  //   }
-  // };
+  //=========================================================================================
+  const [filterText, setFilterText] = useState('');
+  const [lowCasedFilterText, setLowCasedFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+  const filteredItems = tableData.filter(
+    item => item["Содержание предписания"] && item["Содержание предписания"].toLowerCase().includes(lowCasedFilterText),
+  );
 
-  // const subHeaderComponentMemo = React.useMemo(() => {
-  //   const handleClear = () => {
-  //     if (filterText) {
-  //       setResetPaginationToggle(!resetPaginationToggle);
-  //       setFilterText("");
-  //     }
-  //   };
+  useEffect(() => {
+    setLowCasedFilterText(filterText.toLowerCase())
+  }, [filterText])
 
-  //   return (
-  //     <FilterComponent
-  //       onFilter={(e) => setFilterText(e.target.value)}
-  //       onClear={handleClear}
-  //       filterText={filterText}
-  //     />
-  //   );
-  // }, [filterText, resetPaginationToggle]);
+
+  const TextField = styled.input`
+	height: 32px;
+	width: 200px;
+	border-radius: 3px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border: 1px solid #e5e5e5;
+	padding: 0 32px 0 16px;
+	&:hover {
+		cursor: pointer;
+	}
+`;
+
+  const ClearButton = styled(Button)`
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	height: 34px;
+	width: 32px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
+
+  const FilterComponent = (({ filterText, onFilter, onClear }) => {
+    // Состояние и сеттер состояния для поискового запроса
+    const [searchTerm, setSearchTerm] = useState(filterText);
+
+    // Теперь мы вызываем наш хук, передавая текущее значение searchTerm.
+    // Хук вернет только последне значение (которое мы передали) ...
+    // ... если прошло более 500ms с последнего вызова.
+    // Иначе он вернет предыдущее значение searchTerm.
+    // Цель в том, чтобы вызвать АПИ только после того, как пользователь перестанет 
+    // печатать и в итоге мы не будем вызвать АПИ слишком часто.
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    // Здесь происходит вызов АПИ
+    // Мы используем useEffect, так как это асинхронное действие
+    useEffect(
+      () => {
+        // Убедиться что у нас есть значение (пользователь ввел что-то)
+        if (debouncedSearchTerm) {
+          // Сделать запрос к АПИ
+          onFilter(debouncedSearchTerm)
+        }
+      },
+      // Это массив зависимостей useEffect
+      // Хук useEffect сработает только если отложенное значение изменится ...
+      // ... и спасибо нашему хуку, что оно изменится только тогда ...
+      // когда значение searchTerm не менялось на протяжении 500ms.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [debouncedSearchTerm]
+    );
+
+    return (
+      <>
+        <TextField
+          id="search" type="text" placeholder="Фильтр по тексту" aria-label="Search Input"
+          value={searchTerm}
+          onChange={(ev) => setSearchTerm(ev.target.value)}
+        />
+        <ClearButton type="button" onClick={onClear}>
+          X
+        </ClearButton>
+      </>)
+  });
+
+  const subHeaderComponentMemo = React.useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle);
+        setFilterText('');
+      }
+    };
+
+    return (
+      <FilterComponent
+        onFilter={value => setFilterText(value)}
+        onClear={handleClear}
+        filterText={filterText} />
+    );
+  }, [filterText, resetPaginationToggle]);
+  //=========================================================================================
 
   return (
     <DataTable
       title="Реестр предписаний"
       columns={columns}
-      data={tableData}
-      // data={filteredItems}
+      // data={tableData}
+      data={filteredItems}
       // pagination
       sortable
       sortFunction={customSort}
       customStyles={customStyles}
       // paginationResetDefaultPage={resetPaginationToggle} // optionally, a hook to reset pagination to page 1
-      // subHeader
-      // subHeaderComponent={subHeaderComponentMemo}
+      subHeader
+      subHeaderComponent={subHeaderComponentMemo}
       // selectableRows
       dense
       // persistTableHead
@@ -267,63 +337,3 @@ export default function TableGrid(props) {
     />
   );
 }
-
-// const TextField = styled.input`
-// height: 32px;
-// width: 200px;
-// border-radius: 3px;
-// border-top-left-radius: 5px;
-// border-bottom-left-radius: 5px;
-// border-top-right-radius: 0;
-// border-bottom-right-radius: 0;
-// border: 1px solid #e5e5e5;
-// padding: 0 32px 0 16px;
-// &:hover {
-//   cursor: pointer;
-// }
-// `;
-
-// const ButtonStyle = styled.button`
-// 	background-color: #2979ff;
-// 	border: none;
-// 	color: white;
-// 	padding: 8px 32px 8px 32px;
-// 	text-align: center;
-// 	text-decoration: none;
-// 	display: inline-block;
-// 	font-size: 16px;
-// 	border-radius: 3px;
-// 	&:hover {
-// 		cursor: pointer;
-// 	}
-// `;
-
-// const ClearButton = styled(ButtonStyle)`
-// border-top-left-radius: 0;
-// border-bottom-left-radius: 0;
-// border-top-right-radius: 5px;
-// border-bottom-right-radius: 5px;
-// height: 34px;
-// width: 32px;
-// text-align: center;
-// display: flex;
-// align-items: center;
-// justify-content: center;
-// `;
-
-// // eslint-disable-next-line react/prop-types
-// const FilterComponent = ({ filterText, onFilter, onClear }) => (
-// <>
-//   <TextField
-//     id="search"
-//     type="text"
-//     placeholder="Filter By Name"
-//     aria-label="Search Input"
-//     value={filterText}
-//     onChange={onFilter}
-//   />
-//   <ClearButton type="button" onClick={onClear}>
-//     X
-//   </ClearButton>
-// </>
-// );
