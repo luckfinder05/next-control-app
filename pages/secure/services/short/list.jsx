@@ -20,9 +20,9 @@ export default function list(props) {
 
     return (
         <table style={{
+            width: "100%",
             textWrap: "normal",
             wordWrap: "break-word",
-            maxWidth: "900px",
             border: "1px solid black",
             borderCollapse: "collapse"
         }}>
