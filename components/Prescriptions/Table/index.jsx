@@ -1,17 +1,7 @@
 import DataTable from "react-data-table-component";
 import styled from "styled-components";
-import {
-  Alert,
-  Button,
-  Card,
-  Form,
-  Container,
-  InputGroup,
-  FormControl,
-  Stack,
-} from "react-bootstrap";
-
-import React, { useEffect, useRef, useState } from "react";
+import { Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 
 // data provides access to your row data
@@ -23,7 +13,6 @@ function numericSort(rowA, rowB) {
   const a = Number(rowA["№ замечания"]);
   const b = Number(rowB["№ замечания"]);
   return a > b;
-  return 0;
 }
 
 const customSort = (rows, selector, direction) => {
@@ -54,9 +43,7 @@ function dateSort(rowA, rowB) {
   const b = new Date(
     rowB["Дата выдачи замечания"].replace(pattern, "$3-$2-$1")
   ).getTime();
-  // console.log("a > b: ", a, b);
   return a > b;
-  return 0;
 }
 
 const customStyles = {
@@ -133,6 +120,17 @@ const conditionalRowStyles = [
 export default function TableGrid(props) {
   const tableData = props.tableData;
   const data = [...tableData];
+  //=========================================================================================
+  const [filterText, setFilterText] = useState('');
+  const [lowCasedFilterText, setLowCasedFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+  const filteredItems = tableData.filter(
+    item => item["Содержание предписания"] && item["Содержание предписания"].toLowerCase().includes(lowCasedFilterText),
+  );
+
+  useEffect(() => {
+    setLowCasedFilterText(filterText.toLowerCase())
+  }, [filterText])
 
   const columns = [
     {
@@ -211,90 +209,6 @@ export default function TableGrid(props) {
     },
   ];
 
-  //=========================================================================================
-  const [filterText, setFilterText] = useState('');
-  const [lowCasedFilterText, setLowCasedFilterText] = useState('')
-  const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  const filteredItems = tableData.filter(
-    item => item["Содержание предписания"] && item["Содержание предписания"].toLowerCase().includes(lowCasedFilterText),
-  );
-
-  useEffect(() => {
-    setLowCasedFilterText(filterText.toLowerCase())
-  }, [filterText])
-
-
-  const TextField = styled.input`
-	height: 32px;
-	width: 200px;
-	border-radius: 3px;
-	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border: 1px solid #e5e5e5;
-	padding: 0 32px 0 16px;
-	&:hover {
-		cursor: pointer;
-	}
-`;
-
-  const ClearButton = styled(Button)`
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
-	height: 34px;
-	width: 32px;
-	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-`;
-
-  const FilterComponent = (({ filterText, onFilter, onClear }) => {
-    // Состояние и сеттер состояния для поискового запроса
-    const [searchTerm, setSearchTerm] = useState(filterText);
-
-    // Теперь мы вызываем наш хук, передавая текущее значение searchTerm.
-    // Хук вернет только последне значение (которое мы передали) ...
-    // ... если прошло более 500ms с последнего вызова.
-    // Иначе он вернет предыдущее значение searchTerm.
-    // Цель в том, чтобы вызвать АПИ только после того, как пользователь перестанет 
-    // печатать и в итоге мы не будем вызвать АПИ слишком часто.
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-    // Здесь происходит вызов АПИ
-    // Мы используем useEffect, так как это асинхронное действие
-    useEffect(
-      () => {
-        // Убедиться что у нас есть значение (пользователь ввел что-то)
-        if (debouncedSearchTerm) {
-          // Сделать запрос к АПИ
-          onFilter(debouncedSearchTerm)
-        }
-      },
-      // Это массив зависимостей useEffect
-      // Хук useEffect сработает только если отложенное значение изменится ...
-      // ... и спасибо нашему хуку, что оно изменится только тогда ...
-      // когда значение searchTerm не менялось на протяжении 500ms.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [debouncedSearchTerm]
-    );
-
-    return (
-      <>
-        <TextField
-          id="search" type="text" placeholder="Фильтр по тексту" aria-label="Search Input"
-          value={searchTerm}
-          onChange={(ev) => setSearchTerm(ev.target.value)}
-        />
-        <ClearButton type="button" onClick={onClear}>
-          X
-        </ClearButton>
-      </>)
-  });
-
   const subHeaderComponentMemo = React.useMemo(() => {
     const handleClear = () => {
       if (filterText) {
@@ -310,7 +224,6 @@ export default function TableGrid(props) {
         filterText={filterText} />
     );
   }, [filterText, resetPaginationToggle]);
-  //=========================================================================================
 
   return (
     <DataTable
@@ -337,3 +250,79 @@ export default function TableGrid(props) {
     />
   );
 }
+
+
+// ========================================================
+
+const TextField = styled.input`
+height: 32px;
+width: 200px;
+border-radius: 3px;
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+border-top-right-radius: 0;
+border-bottom-right-radius: 0;
+border: 1px solid #e5e5e5;
+padding: 0 32px 0 16px;
+&:hover {
+  cursor: pointer;
+}
+`;
+
+const ClearButton = styled(Button)`
+border-top-left-radius: 0;
+border-bottom-left-radius: 0;
+border-top-right-radius: 5px;
+border-bottom-right-radius: 5px;
+height: 34px;
+width: 32px;
+text-align: center;
+display: flex;
+align-items: center;
+justify-content: center;
+`;
+
+const FilterComponent = (({ filterText, onFilter, onClear }) => {
+  // Состояние и сеттер состояния для поискового запроса
+  const [searchTerm, setSearchTerm] = useState(filterText);
+
+  // Теперь мы вызываем наш хук, передавая текущее значение searchTerm.
+  // Хук вернет только последне значение (которое мы передали) ...
+  // ... если прошло более 500ms с последнего вызова.
+  // Иначе он вернет предыдущее значение searchTerm.
+  // Цель в том, чтобы вызвать АПИ только после того, как пользователь перестанет 
+  // печатать и в итоге мы не будем вызвать АПИ слишком часто.
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  // Здесь происходит вызов АПИ
+  // Мы используем useEffect, так как это асинхронное действие
+  useEffect(
+    () => {
+      // Убедиться что у нас есть значение (пользователь ввел что-то)
+      if (debouncedSearchTerm) {
+        // Сделать запрос к АПИ
+        onFilter(debouncedSearchTerm)
+      }
+    },
+    // Это массив зависимостей useEffect
+    // Хук useEffect сработает только если отложенное значение изменится ...
+    // ... и спасибо нашему хуку, что оно изменится только тогда ...
+    // когда значение searchTerm не менялось на протяжении 500ms.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [debouncedSearchTerm]
+  );
+
+  return (
+    <>
+      <TextField
+        id="search" type="text" placeholder="Фильтр по тексту" aria-label="Search Input"
+        value={searchTerm}
+        onChange={(ev) => setSearchTerm(ev.target.value)}
+      />
+      <ClearButton type="button" onClick={onClear}>
+        X
+      </ClearButton>
+    </>)
+});
+
+  //=========================================================================================
