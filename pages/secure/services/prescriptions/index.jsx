@@ -18,12 +18,13 @@ function PrescriptionsPage(props) {
     if (needToUpdateData) {
       fetch("/api/gss/getData")
         .then((result) => result.json())
-        .then((fetchData) => setTableData(fetchData))
-        .catch((err) => console.error(err));
-
-      fetch("/api/gss/getStats")
-        .then((result) => result.json())
-        .then((fetchData) => setTableStats(fetchData))
+        .then((fetchData) => {
+          setTableData(fetchData);
+          const total = fetchData.length;
+          const resolved = fetchData.filter(el => el['Статус замечания'] === 'Устранено').length;
+          const unresolved = total - resolved;
+          setTableStats({ total, resolved, unresolved })
+        })
         .then(() => setNeedToUpdateData(false))
         .catch((err) => console.error(err));
     }
