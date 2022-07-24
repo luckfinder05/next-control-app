@@ -43,10 +43,10 @@ export default function SettingsPage(props) {
   )
 }
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   const session = await unstable_getServerSession(context.req, context.res, authOptions)
   if (session.user.roles.includes('ADMIN')) {
-  const users = JSON.parse(JSON.stringify(await getUsers()));
+    const users = JSON.parse(JSON.stringify(await getUsers()));
     return {
       props: { session, users }, // will be passed to the page component as props
     }
