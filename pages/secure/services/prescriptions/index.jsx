@@ -50,22 +50,22 @@ function PrescriptionsPage(props) {
             <tr>
               <td>Всего замечаний:</td>
               <td>
-                {tableStats.total}
-                {needToUpdateData && <Spinner animation="border" />}
+                {!needToUpdateData && tableStats.total}
+                {needToUpdateData && <Spinner size="sm" animation="border" />}
               </td>
             </tr>
             <tr>
               <td>Устранено:</td>
               <td>
-                {tableStats.resolved}
-                {needToUpdateData && <Spinner animation="border" />}
+                {!needToUpdateData && tableStats.resolved}
+                {needToUpdateData && <Spinner size="sm" animation="border" />}
               </td>
             </tr>
             <tr>
               <td>Не устранено:</td>
               <td>
-                {tableStats.unresolved}
-                {needToUpdateData && <Spinner animation="border" />}
+                {!needToUpdateData && tableStats.unresolved}
+                {needToUpdateData && <Spinner size="sm" animation="border" />}
               </td>
             </tr>
           </tbody>
@@ -74,9 +74,9 @@ function PrescriptionsPage(props) {
       <ControlledTabs
         updateData={setNeedToUpdateData}
         tableData={tableData}
-      ></ControlledTabs>
+      >
 
-      {/* <table></table> */}
+      </ControlledTabs>
     </div>
   );
 }
