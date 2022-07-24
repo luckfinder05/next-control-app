@@ -5,7 +5,10 @@ function useInput(defaultValue) {
     function onChange(ev) {
         setValue(ev.target.value);
     }
-    return [value, onChange]
+    function resetField() {
+        setValue(defaultValue);
+    }
+    return [value, onChange, resetField]
 }
 
 export default useInput;
