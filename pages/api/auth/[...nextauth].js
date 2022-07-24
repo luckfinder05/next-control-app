@@ -50,6 +50,7 @@ export const authOptions = {
       const validPassword = bcrypt.compareSync(credentials.password, user.password);
       if (!validPassword) return false;
       user.name = credentials.username;
+      account.roles = [...user.roles]
       return user
     },
     async redirect({ url, baseUrl }) {
@@ -58,9 +59,11 @@ export const authOptions = {
     async session({ session, user, token }) {
       session.user.email = "";
       session.user.id = token.sub
+      session.user.roles = token.roles
       return session
     },
     async jwt({ token, user, account, profile, isNewUser }) {
+      if (account) token.roles = account.roles
       return token
     }
   },
