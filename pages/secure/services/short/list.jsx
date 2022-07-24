@@ -59,14 +59,6 @@ export default function list(props) {
 	)
 }
 
-// export async function getServerSideProps(context) {
-//     const shortLinks = JSON.parse(JSON.stringify(await linkShortener.listAllLinks()));
-//     return {
-//         props: { shortLinks }, // will be passed to the page component as props
-
-//     }
-// }
-
 export async function getStaticProps(context) {
 	const shortLinks = JSON.parse(JSON.stringify(await linkShortener.listAllLinks()));
 	return {
