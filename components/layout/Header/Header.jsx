@@ -45,7 +45,7 @@ function Header(props) {
               <Nav className="justify-content-start offset-md-2">
                 <ServicesMenu />
                 <NavLink href="/secure/editor">Editor</NavLink>
-                <UserMenu className="ms-lg-auto" username={username} />
+                <UserMenu className="ms-lg-auto" username={username} user={session.user} />
                 <Nav.Item className="">
                   <Button variant="light" onClick={signOutHandler}>
                     <SignOut /> Logout
