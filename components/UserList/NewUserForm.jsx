@@ -41,7 +41,7 @@ function NewUserForm(props) {
   }
 
   return (
-    <section>
+    <section className={props.className}>
       <h2>Add user</h2>
       <Form>
         <InputGroup>
