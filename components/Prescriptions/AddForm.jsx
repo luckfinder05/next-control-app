@@ -249,6 +249,12 @@ function AddForm(props) {
             object={supervisor}
           />
         </Form.Group>
+
+        <Form.Group controlId="formFile" className="mb-3">
+          <Form.Label>Приложить фотографии</Form.Label>
+          <Form.Control type="file" multiple />
+        </Form.Group>
+
         <Button
           variant="primary"
           disabled={isDataPosting}
