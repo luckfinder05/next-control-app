@@ -2,7 +2,7 @@ import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } 
 
 const ordersSheetRange = 'Предписания!A:K';
 const statsRange = 'Обзор!B8:B10';
-const unresolvedStatsRange = 'Сводная таблица!A:G';
+const unresolvedStatsRange = 'Подрядчики!A:G';
 const weeklyGivenRange = 'Обзор!A24:E62';
 const weeklyResolvedRange = 'Обзор!I24:O62';
 
