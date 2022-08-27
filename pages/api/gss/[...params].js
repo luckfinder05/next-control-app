@@ -2,7 +2,7 @@ import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } 
 
 const ordersSheetRange = 'Предписания!A:K';
 const statsRange = 'Обзор!B8:B10';
-const unresolvedStatsRange = 'Подрядчики!A:G';
+const unresolvedStatsRange = 'stats!A:D';
 const weeklyGivenRange = 'Обзор!A24:E62';
 const weeklyResolvedRange = 'Обзор!I24:O62';
 
@@ -53,9 +53,11 @@ async function getStatsController() {
   const weeklyResolvedCount = weeklyResolvedList.length;
 
   //Data from Pivot Table
+  //Result format:
+  // [Name,unresolvedCount]
   const unresolvedStatsList = (await getValuesFromRange(unresolvedStatsRange))
-    .slice(2).map(el => {
-      return [el[0].slice(el[0].indexOf('(') + 1, -1), el.at(-1)]
+    .slice(1).map(el => {
+      return [el[0], el[1]]
     });
   const unresolvedStatsCount = unresolvedStatsList.length;
 
