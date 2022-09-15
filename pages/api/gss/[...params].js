@@ -58,7 +58,7 @@ async function getStatsController() {
   const unresolvedStatsList = (await getValuesFromRange(unresolvedStatsRange))
     .slice(1).map(el => {
       return [el[0], el[1]]
-    });
+    }).filter(el => el[1] != 0);
   const unresolvedStatsCount = unresolvedStatsList.length;
 
   return {
