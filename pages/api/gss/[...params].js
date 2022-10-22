@@ -1,4 +1,3 @@
-import { useSyncExternalStore } from 'react';
 import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } from './lib'
 
 const ordersSheetRange = 'Предписания!A:K';
@@ -48,16 +47,15 @@ async function getStatsController() {
   // const stats = await getValuesFromRange(statsRange)
   // const [total, resolved, unresolved] = stats.map(el => el[0]);
 
-  const weeklyGivenList = await getValuesFromRange(weeklyGivenRange)
+  const weeklyGivenList = (await getValuesFromRange(weeklyGivenRange)).slice(1);
   const weeklyGivenCount = weeklyGivenList.length;
 
-  const weeklyResolvedList = await getValuesFromRange(weeklyResolvedRange)
+  const weeklyResolvedList = (await getValuesFromRange(weeklyResolvedRange)).slice(1);
   const weeklyResolvedCount = weeklyResolvedList.length;
 
   const unresolvedStats = await getValuesFromRange(unresolvedStatsRange);
   const [unresolved, resolved, total] = unresolvedStats[1].slice(1);
-  const unresolvedStatsList = unresolvedStats
-    .slice(2)
+  const unresolvedStatsList = unresolvedStats.slice(2)
     .map(el => {
       return [el[0], el[1]]
     }).filter(el => el[1] != 0);
