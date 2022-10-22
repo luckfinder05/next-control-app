@@ -63,7 +63,7 @@ async function getStatsController() {
     }).filter(el => el[1] != 0);
   const unresolvedStatsCount = unresolvedStatsList.length;
 
-  const weeklyDocumentsList = await getValuesFromRange(weeklyDocumentsRange);
+  const weeklyDocumentsList = (await getValuesFromRange(weeklyDocumentsRange)).slice(1);
   const weeklyDocumentsCount = weeklyDocumentsList.length;
 
   return {
