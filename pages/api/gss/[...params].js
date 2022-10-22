@@ -1,11 +1,13 @@
 import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } from './lib'
 
 const ordersSheetRange = 'Предписания!A:K';
-const statsRange = 'Обзор!B8:B10';
+// const statsRange = 'Обзор!B8:B10';
 const unresolvedStatsRange = 'stats!A:D';
 const weeklyGivenRange = 'weeklyGiven!A:E';
-const weeklyResolvedRange = 'weeklyResolved!A:G';
-const weeklyDocumentsRange = 'weeklyDocuments!A:B'
+const weeklyResolvedRange = 'weeklyResolved!A:F';
+const weeklyDocumentsRange = 'weeklyDocuments!A:B';
+const completeWorksRange = 'АППР!A:G';
+
 
 async function handler(request, response) {
   if (request.method === 'GET') {
@@ -62,7 +64,12 @@ async function getStatsController() {
   const unresolvedStatsCount = unresolvedStatsList.length;
 
   const weeklyDocumentsList = (await getValuesFromRange(weeklyDocumentsRange)).slice(1);
+  if (weeklyDocumentsList.length === 0) weeklyDocumentsList.push(['', 'За отчётный период документация не передавалась'])
   const weeklyDocumentsCount = weeklyDocumentsList.length;
+
+  const completeWorksList = (await getValuesFromRange(completeWorksRange)).slice(1);
+  const completeWorksCount = completeWorksList.length;
+
 
   return {
     total,
@@ -75,7 +82,9 @@ async function getStatsController() {
     unresolvedStatsCount,
     unresolvedStatsList,
     weeklyDocumentsList,
-    weeklyDocumentsCount
+    weeklyDocumentsCount,
+    completeWorksList,
+    completeWorksCount
   }
 }
 
