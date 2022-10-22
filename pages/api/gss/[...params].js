@@ -1,10 +1,11 @@
+import { useSyncExternalStore } from 'react';
 import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } from './lib'
 
 const ordersSheetRange = 'Предписания!A:K';
 const statsRange = 'Обзор!B8:B10';
 const unresolvedStatsRange = 'stats!A:D';
-const weeklyGivenRange = 'Обзор!A24:E62';
-const weeklyResolvedRange = 'Обзор!I24:O62';
+const weeklyGivenRange = 'weeklyGiven!A:E';
+const weeklyResolvedRange = 'weeklyResolved!A:G';
 
 async function handler(request, response) {
   if (request.method === 'GET') {
@@ -43,8 +44,8 @@ async function handler(request, response) {
 
 async function getStatsController() {
 
-  const stats = await getValuesFromRange(statsRange)
-  const [total, resolved, unresolved] = stats.map(el => el[0]);
+  // const stats = await getValuesFromRange(statsRange)
+  // const [total, resolved, unresolved] = stats.map(el => el[0]);
 
   const weeklyGivenList = await getValuesFromRange(weeklyGivenRange)
   const weeklyGivenCount = weeklyGivenList.length;
@@ -55,10 +56,11 @@ async function getStatsController() {
   //Data from Pivot Table
   //Result format:
   // [Name,unresolvedCount]
-  const unresolvedStatsList = (await getValuesFromRange(unresolvedStatsRange))
-    .slice(1).map(el => {
-      return [el[0], el[1]]
-    }).filter(el => el[1] != 0);
+  const unresolvedStats = await getValuesFromRange(unresolvedStatsRange);
+  const [unresolved, resolved, total] = unresolvedStats[1].slice(1);
+  const unresolvedStatsList = unresolvedStats.slice(2).map(el => {
+    return [el[0], el[1]]
+  }).filter(el => el[1] != 0);
   const unresolvedStatsCount = unresolvedStatsList.length;
 
   return {
