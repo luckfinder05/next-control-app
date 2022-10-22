@@ -6,6 +6,7 @@ const statsRange = 'Обзор!B8:B10';
 const unresolvedStatsRange = 'stats!A:D';
 const weeklyGivenRange = 'weeklyGiven!A:E';
 const weeklyResolvedRange = 'weeklyResolved!A:G';
+const weeklyDocumentsRange = 'weeklyDocuments!A:B'
 
 async function handler(request, response) {
   if (request.method === 'GET') {
@@ -53,15 +54,17 @@ async function getStatsController() {
   const weeklyResolvedList = await getValuesFromRange(weeklyResolvedRange)
   const weeklyResolvedCount = weeklyResolvedList.length;
 
-  //Data from Pivot Table
-  //Result format:
-  // [Name,unresolvedCount]
   const unresolvedStats = await getValuesFromRange(unresolvedStatsRange);
   const [unresolved, resolved, total] = unresolvedStats[1].slice(1);
-  const unresolvedStatsList = unresolvedStats.slice(2).map(el => {
-    return [el[0], el[1]]
-  }).filter(el => el[1] != 0);
+  const unresolvedStatsList = unresolvedStats
+    .slice(2)
+    .map(el => {
+      return [el[0], el[1]]
+    }).filter(el => el[1] != 0);
   const unresolvedStatsCount = unresolvedStatsList.length;
+
+  const weeklyDocumentsList = await getValuesFromRange(weeklyDocumentsRange);
+  const weeklyDocumentsCount = weeklyDocumentsList.length;
 
   return {
     total,
@@ -72,7 +75,9 @@ async function getStatsController() {
     weeklyResolvedCount,
     weeklyResolvedList,
     unresolvedStatsCount,
-    unresolvedStatsList
+    unresolvedStatsList,
+    weeklyDocumentsList,
+    weeklyDocumentsCount
   }
 }
 
