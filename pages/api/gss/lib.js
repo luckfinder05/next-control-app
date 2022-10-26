@@ -1,7 +1,6 @@
 import { google } from 'googleapis';
 import { authorize } from './google-auth';
 
-const APIkey = process.env.GOOGLE_API;
 const spreadsheetId = process.env.SPREADSHEET_ID;
 
 const ordersSheetRange = 'Предписания!A:K';
@@ -20,11 +19,10 @@ export const ordersHeaders = [
   'Примечание']
 
 export async function getValuesFromRange(range) {
-  const sheets = google.sheets({ version: 'v4' });
+  const sheets = google.sheets({ version: 'v4', auth: auth });
   const requestObject = {
     spreadsheetId,
-    range,
-    key: APIkey
+    range
   }
   const result = (await sheets.spreadsheets.values.get(requestObject)).data.values;
   if (!result) return []
