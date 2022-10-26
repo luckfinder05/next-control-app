@@ -8,8 +8,8 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'config/google-token.json';
-const GOOGLE_CREDENTIALS_JSON = process.env.GOOGLE_CREDENTIALS_JSON;
-const GOOGLE_TOKEN_JSON = process.env.GOOGLE_TOKEN_JSON;
+const GOOGLE_CREDENTIALS_JSON = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+const GOOGLE_TOKEN_JSON = JSON.parse(process.env.GOOGLE_TOKEN_JSON);
 
 
 
