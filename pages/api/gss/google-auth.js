@@ -25,7 +25,7 @@ export function authorize() {
   // if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Sheets API.
   // authorize(JSON.parse(content), callback);
-  const { client_secret, client_id, redirect_uris } = JSON.parse(GOOGLE_CREDENTIALS_JSON).web;
+  const { client_secret, client_id, redirect_uris } = GOOGLE_CREDENTIALS_JSON.web;
   const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
 
