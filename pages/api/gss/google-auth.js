@@ -32,7 +32,7 @@ export function authorize() {
   // Check if we have previously stored a token.
   // fs.readFile(TOKEN_PATH, (err, token) => {
   // if (err) return getNewToken(oAuth2Client, callback);
-  oAuth2Client.setCredentials(JSON.parse(GOOGLE_TOKEN_JSON));
+  oAuth2Client.setCredentials(GOOGLE_TOKEN_JSON);
   return (oAuth2Client);
   // });
   // });
