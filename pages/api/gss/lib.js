@@ -16,7 +16,11 @@ export const ordersHeaders = [
   "Дата устранения",
   'Подрядчик',
   'Представитель ССК',
-  'Примечание']
+  'Примечание',
+  "Место обнаружения нарушения",
+  "Предписано/Методы устранения",
+  "Срок устранения"
+]
 
 export async function getValuesFromRange(range) {
   const sheets = google.sheets({ version: 'v4', auth: auth });
