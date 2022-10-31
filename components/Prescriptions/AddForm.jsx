@@ -28,6 +28,9 @@ function AddForm(props) {
   const workType = useInputListGroup(tableData, "Вид контроля");
   const supervisor = useInputListGroup(tableData, "Представитель ССК");
   const order = useInputListGroup(tableData, "Статус замечания");
+  const [todoText, setTodoText] = useState("");
+  const [orderPlace, setOrderPlace] = useState("");
+  const [term, setTerm] = useState("");
 
   /* 
     '_uid': row[0],
@@ -106,17 +109,13 @@ function AddForm(props) {
     });
   }
 
-  function orderTextHandler(ev) {
-    setOrderText(ev.target.value);
-  }
-
-  function setFocusToTextInput(ev) {
-    return ev.target.nextElementSibling.focus();
-  }
-
-  function docDateHandler(ev) {
-    setDocDate(ev.target.value);
-  }
+  function orderTextHandler(ev) { setOrderText(ev.target.value); }
+  function setFocusToTextInput(ev) { return ev.target.nextElementSibling.focus(); }
+  function docDateHandler(ev) { setDocDate(ev.target.value); }
+  function termTextHandler(ev) { setTerm(ev.target.value) }
+  function termDateHandler(ev) { setTerm(ev.target.value) }
+  function todoTextHandler(ev) { setTodoText(ev.target.value) }
+  function orderPlaceHandler(ev) { setOrderPlace(ev.target.value) }
 
   function submitHandler(ev) {
     setIsDataPosting(true);
@@ -206,8 +205,8 @@ function AddForm(props) {
             <Form.Control
               as="textarea"
               rows={2}
-            // value={orderText}
-            // onChange={orderTextHandler}
+              value={todoText}
+              onChange={todoTextHandler}
             />
           </InputGroup>
 
@@ -215,16 +214,17 @@ function AddForm(props) {
             <InputGroup.Text onClick={setFocusToTextInput}>
               Устранить до
             </InputGroup.Text>
-            <Form.Control
+            {/* <Form.Control
               className="flex-shrink-1"
-            // value={orderText}
-            // onChange={orderTextHandler}
-            />
+              placeholdeer="до момента сокрытия последующими работами"
+              value={term}
+              onChange={termTextHandler}
+            /> */}
             <Form.Control
               className="ms-auto"
               type="date"
               name="orderDate"
-            // onChange={docDateHandler}
+              onChange={termDateHandler}
             // defaultValue={docDate}
             />
           </InputGroup>
@@ -244,6 +244,8 @@ function AddForm(props) {
               <Form.Control
                 type="text"
                 placeholder="в осях... отметка... этаж..."
+                value={orderPlace}
+                onChange={orderPlaceHandler}
               />
             </InputGroup>
           </Stack>
