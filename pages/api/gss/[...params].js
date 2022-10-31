@@ -1,6 +1,6 @@
 import { transformOrdersData, getValuesFromRange, ordersHeaders, appendValues } from './lib'
 
-const ordersSheetRange = 'Предписания!A:K';
+const ordersSheetRange = 'Предписания!A:N';
 // const statsRange = 'Обзор!B8:B10';
 const unresolvedStatsRange = 'stats!A:D';
 const weeklyGivenRange = 'weeklyGiven!A:E';

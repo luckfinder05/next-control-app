@@ -3,7 +3,7 @@ import { authorize } from './google-auth';
 
 const spreadsheetId = process.env.SPREADSHEET_ID;
 
-const ordersSheetRange = 'Предписания!A:K';
+const ordersSheetRange = 'Предписания!A:N';
 
 export const ordersHeaders = [
   '_uid',
