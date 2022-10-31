@@ -35,7 +35,7 @@ function PrescriptionsPage(props) {
       <h1 style={{ textAlign: "center" }}>Предписания</h1>
       <Container className="mt-2 border rounded">
         <a
-          href={`https://docs.google.com/spreadsheets/d/15qJi39meo8qPe_7dXblg-CMiET_rVCuBguwXhxrcQm0/edit#gid=1122962256`}
+          href={`https://docs.google.com/spreadsheets/d/1rYQKe88jLUa-JWCmcvBAEM0oYugXKFrRQZF0OcI9HCY/edit#gid=1122962256`}
           target="_blank"
           rel="noreferrer"
         >
