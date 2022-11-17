@@ -105,7 +105,7 @@ function AddForm(props) {
 
   function pasteButtonHandler(ev) {
     navigator.clipboard.readText().then((res) => {
-      setOrderText((orderText += res));
+      setOrderText((orderText + res));
     });
   }
 
