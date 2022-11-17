@@ -6,7 +6,7 @@ const unresolvedStatsRange = 'stats!A:D';
 const weeklyGivenRange = 'weeklyGiven!A:E';
 const weeklyResolvedRange = 'weeklyResolved!A:F';
 const weeklyDocumentsRange = 'weeklyDocuments!A:B';
-const completeWorksRange = 'АППР!A:G';
+const completeWorksRange = 'weeklyApproved!A:J';
 
 
 async function handler(request, response) {
