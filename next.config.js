@@ -3,7 +3,6 @@ module.exports = {
   images: {
     domains: ['openweathermap.org'],
   },
-  secret: process.env.NEXTAUTH_SECRET,
   serverRuntimeConfig: {
     secret: process.env.NEXTAUTH_SECRET
   },
