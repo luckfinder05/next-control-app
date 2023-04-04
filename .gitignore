@@ -38,3 +38,4 @@ config/
 .vercel
 
 .git-ignore*
+.env
